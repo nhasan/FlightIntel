@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,28 +20,22 @@ package com.nadmm.airports.wx
 
 import android.content.Intent
 import android.text.format.DateUtils
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.launch
 
 class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override suspend fun onHandleIntent(intent: Intent?) {
         intent?.let {
             val action = intent.action
 
-            serviceScope.launch {
-                if (action == ACTION_GET_FA) {
-                    getFaText(intent)
-                }
+            if (action == ACTION_GET_FA) {
+                getFaText(intent)
             }
         }
-
-        return START_NOT_STICKY
     }
 
     private suspend fun getFaText(intent: Intent) {
-        val action = intent.action
+        val action = intent.action ?: return
         val code = intent.getStringExtra(TEXT_CODE) ?: return
         val file = wxCache.getFile(code)
         if (!file.exists()) {
@@ -53,10 +47,10 @@ class AreaForecastService : NoaaService("fa", FA_CACHE_MAX_AGE) {
             }
         }
 
-        val result = bundleOf(
-            ACTION to action,
-            TYPE to TYPE_TEXT,
-            RESULT to if (file.exists()) file.absolutePath else ""
+        val result = Result(
+            action = action,
+            type = TYPE_TEXT,
+            result = if (file.exists()) file.absolutePath else ""
         )
         Events.post(result)
     }

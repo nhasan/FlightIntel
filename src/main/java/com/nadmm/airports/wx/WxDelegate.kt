@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 package com.nadmm.airports.wx
 
 import android.content.Intent
-import android.content.IntentFilter
 import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
@@ -29,11 +28,6 @@ import com.nadmm.airports.utils.NetworkUtils
 
 class WxDelegate(private val fragment: RecyclerViewFragment) {
     private val stationIds = ArrayList<String>()
-    private val metarServiceFilter = IntentFilter()
-
-    init {
-        metarServiceFilter.addAction(NoaaService.ACTION_GET_METAR)
-    }
 
     fun setCursor(c: Cursor) {
         stationIds.clear()

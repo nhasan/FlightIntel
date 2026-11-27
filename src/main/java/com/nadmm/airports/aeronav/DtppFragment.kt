@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.DataUtils.decodeChartCode
 import com.nadmm.airports.utils.DataUtils.decodeUserAction
 import com.nadmm.airports.utils.NetworkUtils.checkNetworkAndDownload
@@ -47,6 +48,7 @@ import com.nadmm.airports.utils.TimeUtils
 import com.nadmm.airports.utils.UiUtils.setDefaultTintedTextViewDrawable
 import com.nadmm.airports.utils.UiUtils.showToast
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.ParseException
@@ -103,7 +105,7 @@ class DtppFragment : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                DtppService.Events.events.collect { result ->
+                CoroutineIntentService.Events.events.filterIsInstance<DtppService.Result>().collect { result ->
                     handleDtppResult(result)
                 }
             }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,8 +58,8 @@ class ScratchPadFragment : FragmentBase(), FreeHandDrawView.EventListener {
         return inflater.inflate(R.layout.scratchpad_view, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         mToolbar = findViewById(R.id.toolbar)
         mDrawView = findViewById(R.id.drawing)
         mDrawView!!.setEventListener(this)

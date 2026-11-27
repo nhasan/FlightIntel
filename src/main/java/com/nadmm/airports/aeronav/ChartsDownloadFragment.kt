@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,11 +41,13 @@ import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Dtpp
 import com.nadmm.airports.data.DatabaseManager.DtppCycle
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.NetworkUtils
 import com.nadmm.airports.utils.TimeUtils
 import com.nadmm.airports.utils.UiUtils
 import com.nadmm.airports.utils.forEach
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.ParseException
@@ -108,7 +110,7 @@ class ChartsDownloadFragment : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                DtppService.Events.events.collect { result ->
+                CoroutineIntentService.Events.events.filterIsInstance<DtppService.Result>().collect { result ->
                     when (result.action) {
                         AeroNavService.ACTION_GET_CHARTS -> onChartDownload()
                         AeroNavService.ACTION_CHECK_CHARTS -> onChartDelete()

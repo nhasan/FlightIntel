@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.net.toUri
-import androidx.core.os.BundleCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -68,6 +67,7 @@ import com.nadmm.airports.datis.DatisFragment
 import com.nadmm.airports.dof.NearbyObstaclesFragment
 import com.nadmm.airports.notams.AirportNotamActivity
 import com.nadmm.airports.utils.ClassBUtils
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.DataUtils
 import com.nadmm.airports.utils.FormatUtils
 import com.nadmm.airports.utils.GeoUtils
@@ -84,6 +84,7 @@ import com.nadmm.airports.wx.NoaaService
 import com.nadmm.airports.wx.WxDetailActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -131,11 +132,10 @@ class AirportDetailsFragment : FragmentBase() {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    NoaaService.Events.events.collect { result ->
-                        val resultAction = result.getString(NoaaService.ACTION)
+                    CoroutineIntentService.Events.events.filterIsInstance<NoaaService.Result>().collect { result ->
+                        val resultAction = result.action
                         if (resultAction == NoaaService.ACTION_GET_METAR) {
-                            val metar = BundleCompat.getParcelable(
-                                result, NoaaService.RESULT, Metar::class.java) ?: Metar()
+                            val metar = result.result as? Metar ?: Metar()
                             if (metar.isValid) {
                                 showWxInfo(metar)
                             }
@@ -147,16 +147,20 @@ class AirportDetailsFragment : FragmentBase() {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    DafdService.Events.events.filter { it.isNotEmpty() }.collect { path ->
-                        SystemUtils.startPDFViewer(requireContext(), path)
+                    CoroutineIntentService.Events.events.filterIsInstance<DafdService.Result>().filter { it.action == AeroNavService.ACTION_GET_AFD }.collect { result ->
+                        val path = result.path
+                        if (path.isNotEmpty()) {
+                            SystemUtils.startPDFViewer(requireContext(), path)
+                        }
                     }
                 }
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    ClassBService.Events.events.filter { it.isNotEmpty() }.collect { path ->
-                        if (path.isNotEmpty()) {
+                    CoroutineIntentService.Events.events.filterIsInstance<ClassBService.Result>().filter { it.action == ClassBService.ACTION_GET_CLASSB_GRAPHIC }.collect { result ->
+                        val path = result.path
+                        if (!path.isNullOrEmpty()) {
                             SystemUtils.startPDFViewer(requireContext(), path)
                         }
                     }

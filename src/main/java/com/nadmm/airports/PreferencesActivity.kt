@@ -53,7 +53,7 @@ class PreferencesActivity : FragmentActivityBase() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -102,10 +102,10 @@ class PreferencesActivity : FragmentActivityBase() {
             }
 
             val radius = findPreference<ListPreference?>(KEY_LOCATION_NEARBY_RADIUS)
-            radius?.setSummaryProvider(SummaryProvider { preference: Preference? -> "Show locations within " + radius.getValue() + " NM radius" })
+            radius?.setSummaryProvider(SummaryProvider { _ : Preference? -> "Show locations within " + radius.getValue() + " NM radius" })
 
             val homeScreen = findPreference<ListPreference?>(KEY_HOME_SCREEN)
-            homeScreen?.setSummaryProvider(SummaryProvider { preference: Preference? -> "Show " + homeScreen.getValue() + " screen on startup" })
+            homeScreen?.setSummaryProvider(SummaryProvider { _ : Preference? -> "Show " + homeScreen.getValue() + " screen on startup" })
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

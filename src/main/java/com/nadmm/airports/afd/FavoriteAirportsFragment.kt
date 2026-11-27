@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ package com.nadmm.airports.afd
 import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.RecyclerViewFragment
 import com.nadmm.airports.data.DatabaseManager
@@ -43,8 +44,8 @@ class FavoriteAirportsFragment : RecyclerViewFragment() {
         }
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setEmptyText("No favorite airports selected.")
     }

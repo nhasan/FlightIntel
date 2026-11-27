@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,23 +18,20 @@
  */
 package com.nadmm.airports.tfr
 
-import android.app.IntentService
-import java.io.File
+import android.os.Bundle
 import android.text.format.DateUtils
-import com.nadmm.airports.utils.SystemUtils
-import android.content.Intent
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import java.util.*
+import com.nadmm.airports.utils.CoroutineIntentService
+import kotlinx.coroutines.runBlocking
+import java.io.File
+import java.util.Date
 
-abstract class TfrServiceBase : IntentService(SERVICE_NAME) {
-    private var mDataDir: File? = null
+abstract class TfrServiceBase : CoroutineIntentService(SERVICE_NAME) {
 
     override fun onCreate() {
         super.onCreate()
-        mDataDir = SystemUtils.getExternalDir(this, SERVICE_NAME)
-
+        
         // Remove any old files from cache first
-        cleanupCache(mDataDir)
+        cleanupCache(localDataDir)
     }
 
     private fun cleanupCache(dir: File?) {
@@ -50,18 +47,17 @@ abstract class TfrServiceBase : IntentService(SERVICE_NAME) {
     }
 
     protected fun getFile(name: String): File {
-        return File(mDataDir, name)
+        return File(localDataDir, name)
     }
 
-    protected fun makeResultIntent(action: String?): Intent {
-        val intent = Intent()
-        intent.action = action
-        return intent
+    protected fun makeResultBundle(action: String?): Bundle {
+        val bundle = Bundle()
+        bundle.putString("ACTION", action)
+        return bundle
     }
 
-    protected fun sendResultIntent(intent: Intent?) {
-        val bm = LocalBroadcastManager.getInstance(this)
-        bm.sendBroadcast(intent!!)
+    protected fun sendResultBundle(bundle: Bundle?) {
+        bundle?.let { runBlocking { Events.post(it) } }
     }
 
     companion object {

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,28 +22,22 @@ import android.content.Context
 import android.content.Intent
 import android.text.format.DateUtils
 import android.util.Log
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.launch
 import java.io.File
 
 class TafService : NoaaService("taf", CACHE_MAX_AGE) {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override suspend fun onHandleIntent(intent: Intent?) {
         intent?.let {
             val action = intent.action
 
-            serviceScope.launch {
-                if (action == ACTION_GET_TAF) {
-                    val type = intent.getStringExtra(TYPE)
-                    if (type == TYPE_TEXT) {
-                        getTafText(intent)
-                    }
+            if (action == ACTION_GET_TAF) {
+                val type = intent.getStringExtra(TYPE)
+                if (type == TYPE_TEXT) {
+                    getTafText(intent)
                 }
             }
         }
-
-        return START_NOT_STICKY
     }
 
     private suspend fun getTafText(intent: Intent) {
@@ -78,10 +72,10 @@ class TafService : NoaaService("taf", CACHE_MAX_AGE) {
         }
 
         val taf = wxCache.deserializeObject<Taf>(stationId) ?: Taf()
-        val result = bundleOf(
-            ACTION to ACTION_GET_TAF,
-            TYPE to TYPE_TEXT,
-            RESULT to taf
+        val result = Result(
+            action = ACTION_GET_TAF,
+            type = TYPE_TEXT,
+            result = taf
         )
         Events.post(result)
     }

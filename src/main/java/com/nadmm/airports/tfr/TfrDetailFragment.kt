@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,10 @@
  */
 package com.nadmm.airports.tfr
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.nadmm.airports.FragmentBase
@@ -45,16 +43,6 @@ class TfrDetailFragment : FragmentBase() {
         super.onViewCreated(view, savedInstanceState)
         val args = arguments
         mTfr = args!!.getSerializable(TfrListActivity.EXTRA_TFR) as Tfr?
-        val btnGraphic = view.findViewById<Button>(R.id.btnViewGraphic)
-        if (mTfr!!.notamId != null && mTfr!!.notamId!!.isNotEmpty()) {
-            btnGraphic.setOnClickListener {
-                val intent = Intent(activity, TfrImageActivity::class.java)
-                intent.putExtra(TfrListActivity.EXTRA_TFR, mTfr)
-                startActivity(intent)
-            }
-        } else {
-            btnGraphic.visibility = View.GONE
-        }
         var layout = view.findViewById<LinearLayout>(R.id.tfr_header_layout)
         addRow(layout!!, "NOTAM Id", mTfr!!.notamId)
         if (mTfr!!.type != null && mTfr!!.type!!.isNotEmpty()) {
@@ -90,10 +78,7 @@ class TfrDetailFragment : FragmentBase() {
         tv.text = ("Depicted TFR data may not be a complete listing. Pilots should not use "
                 + "the information for flight planning purposes. For the latest information, "
                 + "call your local Flight Service Station at 1-800-WX-BRIEF.")
-    }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         setActionBarTitle("TFR Details")
         setActionBarSubtitle(mTfr!!.name!!)
         setFragmentContentShown(true)

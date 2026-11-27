@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,27 +24,22 @@ import android.location.Location
 import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.util.Log
 import androidx.core.content.IntentCompat
-import androidx.core.os.bundleOf
 import com.nadmm.airports.utils.UiUtils.showToast
-import kotlinx.coroutines.launch
 import java.io.File
 
 class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override suspend fun onHandleIntent(intent: Intent?) {
         intent?.let {
             val action = intent.action
 
-            serviceScope.launch {
-                if (action == ACTION_GET_PIREP) {
-                    val type = intent.getStringExtra(TYPE)
-                    if (type == TYPE_TEXT) {
-                        getPirepText(intent)
-                    }
+            if (action == ACTION_GET_PIREP) {
+                val type = intent.getStringExtra(TYPE)
+                if (type == TYPE_TEXT) {
+                    getPirepText(intent)
                 }
             }
         }
-        return START_NOT_STICKY
     }
 
     private suspend fun getPirepText(intent: Intent) {
@@ -84,10 +79,10 @@ class PirepService : NoaaService("pirep", CACHE_MAX_AGE) {
         // Send the Pirep
         val pirep = wxCache.deserializeObject<Pirep>(stationId) ?: Pirep()
 
-        val result = bundleOf(
-            ACTION to ACTION_GET_PIREP,
-            TYPE to TYPE_TEXT,
-            RESULT to pirep
+        val result = Result(
+            action = ACTION_GET_PIREP,
+            type = TYPE_TEXT,
+            result = pirep
         )
         Events.post(result)
     }

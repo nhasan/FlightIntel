@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,16 @@
  */
 package com.nadmm.airports.aeronav
 
-import android.app.Service
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.FileUtils
 import com.nadmm.airports.utils.NetworkUtils
-import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.UiUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import java.io.File
 
-abstract class AeroNavService(private val name: String) : Service() {
-    private val serviceJob = SupervisorJob() // Use SupervisorJob for better error handling in children
-    // Coroutine scope tied to Dispatchers.IO for background work
-    protected val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
-
-    var serviceDataDir: File? = null
-        private set
-
-    override fun onCreate() {
-        super.onCreate()
-        serviceDataDir = SystemUtils.getExternalDir(this, name)
-    }
+abstract class AeroNavService(name: String) : CoroutineIntentService(name) {
 
     protected fun getCycleDir(cycle: String): File {
-        val dir = File(serviceDataDir, cycle)
+        val dir = File(localDataDir, cycle)
         if (!dir.exists()) {
             cleanupOldCycles()
             dir.mkdir()
@@ -60,7 +45,7 @@ abstract class AeroNavService(private val name: String) : Service() {
     }
 
     private fun cleanupOldCycles() {
-        val cycles = serviceDataDir?.listFiles() ?: return
+        val cycles = localDataDir?.listFiles() ?: return
         for (cycle in cycles) {
             FileUtils.removeDir(cycle)
         }

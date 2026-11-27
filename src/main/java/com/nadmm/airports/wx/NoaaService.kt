@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,25 +18,14 @@
  */
 package com.nadmm.airports.wx
 
-import android.app.Service
-import android.content.Intent
-import android.os.Bundle
-import android.os.IBinder
+import android.os.Parcelable
 import android.util.Log
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.NetworkUtils.doHttpsGet
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import java.io.File
 import java.util.zip.GZIPInputStream
 
-abstract class NoaaService(protected val name: String, protected val maxAgeMillis: Long) : Service() {
-    private val serviceJob = SupervisorJob() // Use SupervisorJob for better error handling in children
-    // Coroutine scope tied to Dispatchers.IO for background work
-    protected val serviceScope = CoroutineScope(serviceJob + Dispatchers.IO + CoroutineName(name))
+abstract class NoaaService(name: String, protected val maxAgeMillis: Long) : CoroutineIntentService(name) {
 
     private var _wxCache: WxCache? = null
     protected val wxCache get() = _wxCache!!
@@ -44,21 +33,14 @@ abstract class NoaaService(protected val name: String, protected val maxAgeMilli
     override fun onCreate() {
         super.onCreate()
 
-        _wxCache = WxCache(this, name, maxAgeMillis)
+        _wxCache = WxCache(this, serviceName, maxAgeMillis)
 
-        Log.d(TAG, "onCreate() called for $name service")
-    }
-
-    override fun onBind(intent: Intent): IBinder? {
-        // We are not using a bound service, so return null
-        return null
+        Log.d(TAG, "onCreate() called for $serviceName service")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy() called for $name service")
-        // Cancel all coroutines when the service is destroyed
-        serviceJob.cancel() // This will cancel all coroutines launched in serviceScope
+        Log.d(TAG, "onDestroy() called for $serviceName service")
     }
 
     protected fun fetchFromNoaa(path: String, query: String?, file: File, compressed: Boolean=false): Boolean {
@@ -72,14 +54,15 @@ abstract class NoaaService(protected val name: String, protected val maxAgeMilli
         )
     }
 
-    object Events {
-        private val _events = MutableSharedFlow<Bundle>()
-        val events = _events.asSharedFlow()
-
-        suspend fun post(result: Bundle) {
-            _events.emit(result)
-        }
-    }
+    data class Result(
+        val action: String,
+        val type: String,
+        val result: Any? = null,
+        val imageCode: String? = null,
+        val imageType: String? = null,
+        val textCode: String? = null,
+        val textType: String? = null
+    )
 
     companion object {
         private val TAG: String = NoaaService::class.java.simpleName
@@ -96,7 +79,6 @@ abstract class NoaaService(protected val name: String, protected val maxAgeMilli
         const val IMAGE_CODE: String = "IMAGE_CODE"
         const val TEXT_TYPE: String = "TEXT_TYPE"
         const val TEXT_CODE: String = "TEXT_CODE"
-        const val RESULT: String = "RESULT"
 
         const val TYPE: String = "TYPE"
         const val TYPE_TEXT: String = "TYPE_TEXT"

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,14 +21,15 @@ package com.nadmm.airports.wx
 import android.database.Cursor
 import android.os.Bundle
 import android.view.View
-import androidx.core.os.BundleCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.LocationListFragmentBase
 import com.nadmm.airports.data.DatabaseManager
+import com.nadmm.airports.utils.CoroutineIntentService
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -48,11 +49,10 @@ class NearbyWxFragment : LocationListFragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                NoaaService.Events.events.collect { result ->
-                    val resultAction = result.getString(NoaaService.ACTION)
+                CoroutineIntentService.Events.events.filterIsInstance<NoaaService.Result>().collect { result ->
+                    val resultAction = result.action
                     if (resultAction == NoaaService.ACTION_GET_METAR) {
-                        val metar = BundleCompat.getParcelable(result, NoaaService.RESULT, Metar::class.java)
-                            ?: Metar()
+                        val metar = result.result as? Metar ?: Metar()
                         val adapter = recyclerView.adapter as? WxRecyclerViewAdapter
                         adapter?.onMetarFetched(metar)
                         isRefreshing = false

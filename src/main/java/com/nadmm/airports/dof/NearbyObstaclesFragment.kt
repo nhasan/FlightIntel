@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package com.nadmm.airports.dof
 
 import android.database.Cursor
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.LocationListFragmentBase
@@ -32,8 +33,8 @@ import java.util.Locale
 class NearbyObstaclesFragment : LocationListFragmentBase() {
     private val mRadius = 5
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setEmptyText("No obstacles found nearby.")
         setActionBarTitle("Nearby Obstacles", "")
         setActionBarSubtitle(String.format(Locale.US, "Within %d NM radius", mRadius))

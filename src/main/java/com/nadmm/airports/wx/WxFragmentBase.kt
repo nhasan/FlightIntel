@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
-import androidx.core.os.BundleCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.textfield.TextInputLayout
 import com.nadmm.airports.FragmentBase
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.UiUtils
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 abstract class WxFragmentBase(private val action: String) : FragmentBase() {
@@ -38,8 +39,8 @@ abstract class WxFragmentBase(private val action: String) : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                NoaaService.Events.events.collect { result ->
-                    val resultAction = result.getString(NoaaService.ACTION)
+                CoroutineIntentService.Events.events.filterIsInstance<NoaaService.Result>().collect { result ->
+                    val resultAction = result.action
                     if (resultAction == action) {
                         processResult(result)
                     }
@@ -65,11 +66,11 @@ abstract class WxFragmentBase(private val action: String) : FragmentBase() {
         return textView?.getText().toString()
     }
 
-    protected open fun processResult(result: Bundle) {
+    protected open fun processResult(result: NoaaService.Result) {
     }
 
-    protected fun <T> getResultObject(result: Bundle, clazz: Class<T>): T {
-        return BundleCompat.getParcelable(result, NoaaService.RESULT, clazz)
-            ?: clazz.getDeclaredConstructor().newInstance()
+    @Suppress("UNCHECKED_CAST")
+    protected fun <T> getResultObject(result: NoaaService.Result, clazz: Class<T>): T {
+        return (result.result as? T) ?: clazz.getDeclaredConstructor().newInstance()
     }
 }

@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,11 @@ abstract class ListFragmentBase : FragmentBase() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setFragmentContentShownNoAnimation(false)
+    }
+
     override fun onDestroy() {
         super.onDestroy() // Don't forget to call super!
         listView.adapter?.let { adapter ->
@@ -73,12 +78,6 @@ abstract class ListFragmentBase : FragmentBase() {
                 adapter.swapCursor(null)
             }
         }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        setFragmentContentShownNoAnimation(false)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -102,10 +101,6 @@ abstract class ListFragmentBase : FragmentBase() {
             setListShown(count > 0)
         }
         setFragmentContentShown(true)
-    }
-
-    fun setEmptyText(text: String) {
-        binding.empty.text = text
     }
 
     protected fun setListShown(show: Boolean) {

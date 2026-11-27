@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,55 +18,34 @@
  */
 package com.nadmm.airports.library
 
-import android.app.Service
 import android.content.Intent
 import android.os.Bundle
 import android.os.IBinder
-import androidx.core.os.bundleOf
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.NetworkUtils
-import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.UiUtils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.zip.GZIPInputStream
 
-class LibraryService : Service() {
-    private val serviceJob = SupervisorJob() // Use SupervisorJob for better error handling in children
-    // Coroutine scope tied to Dispatchers.IO for background work
-    private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
+class LibraryService : CoroutineIntentService("library") {
 
-    private var mDataDir: File? = null
+    override suspend fun onHandleIntent(intent: Intent?) {
+        intent?.let {
+            when (intent.action) {
+                ACTION_CHECK_BOOKS -> {
+                    checkBooks(intent)
+                }
 
-    override fun onCreate() {
-        super.onCreate()
-        mDataDir = SystemUtils.getExternalDir(this, "library")
-    }
+                ACTION_GET_BOOK -> {
+                    getBook(intent)
+                }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        serviceScope.launch {
-            intent?.let {
-                when (intent.action) {
-                    ACTION_CHECK_BOOKS -> {
-                        checkBooks(intent)
-                    }
-
-                    ACTION_GET_BOOK -> {
-                        getBook(intent)
-                    }
-
-                    ACTION_DELETE_BOOK -> {
-                        deleteBook(intent)
-                    }
+                ACTION_DELETE_BOOK -> {
+                    deleteBook(intent)
                 }
             }
         }
-
-        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder?  = null
@@ -110,12 +89,12 @@ class LibraryService : Service() {
         }
     }
 
-    private fun fetch(category: String, pdfFile: File): Boolean {
+    private suspend fun fetch(category: String, pdfFile: File): Boolean {
         try {
-            val result = bundleOf(
-                ACTION to ACTION_DOWNLOAD_PROGRESS,
-                NetworkUtils.CONTENT_NAME to pdfFile.name,
-            )
+            val result = Bundle().apply {
+                putString(ACTION, ACTION_DOWNLOAD_PROGRESS)
+                putString(NetworkUtils.CONTENT_NAME, pdfFile.name)
+            }
             val path = LIBRARY_PATH + "/" + category + "/" + pdfFile.name + ".gz"
             return NetworkUtils.doHttpsGet1(
                 this, LIBRARY_HOST, path, null,
@@ -128,20 +107,22 @@ class LibraryService : Service() {
     }
 
     private fun progress(result: Bundle) {
-        serviceScope.launch {
-            Events.post(result)
-        }
+        val progressResult = Result(
+            action = result.getString(ACTION) ?: "",
+            contentName = result.getString(NetworkUtils.CONTENT_NAME),
+            contentLength = result.getInt(NetworkUtils.CONTENT_LENGTH, 0),
+            contentProgress = result.getInt(NetworkUtils.CONTENT_PROGRESS, 0)
+        )
+        runBlocking { Events.post(progressResult) }
     }
 
     private suspend fun sendResult(action: String, category: String, pdfFile: File) {
-        val result = bundleOf(
-            ACTION to action,
-            CATEGORY to category,
-            BOOK_NAME to pdfFile.name
+        val result = Result(
+            action = action,
+            category = category,
+            bookName = pdfFile.name,
+            pdfPath = if (pdfFile.exists()) pdfFile.absolutePath else null
         )
-        if (pdfFile.exists()) {
-            result.putString(PDF_PATH, pdfFile.absolutePath)
-        }
         Events.post(result)
     }
 
@@ -159,21 +140,22 @@ class LibraryService : Service() {
     }
 
     private fun getCategoryDir(category: String): File {
-        val categoryDir = File(mDataDir, category)
+        val categoryDir = File(localDataDir, category)
         if (!categoryDir.exists()) {
             categoryDir.mkdirs()
         }
         return categoryDir
     }
 
-    object Events {
-        private val _events = MutableSharedFlow<Bundle>()
-        val events = _events.asSharedFlow()
-
-        suspend fun post(bundle: Bundle) {
-            _events.emit(bundle)
-        }
-    }
+    data class Result(
+        val action: String,
+        val category: String? = null,
+        val bookName: String? = null,
+        val pdfPath: String? = null,
+        val contentName: String? = null,
+        val contentLength: Int = 0,
+        val contentProgress: Int = 0
+    )
 
     companion object {
         const val LIBRARY_HOST = "commondatastorage.googleapis.com"

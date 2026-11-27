@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,11 +44,13 @@ import com.nadmm.airports.data.DatabaseManager.Library
 import com.nadmm.airports.databinding.LibraryDetailSectionBinding
 import com.nadmm.airports.databinding.LibraryDetailViewBinding
 import com.nadmm.airports.databinding.LibraryRowItemBinding
+import com.nadmm.airports.utils.CoroutineIntentService
 import com.nadmm.airports.utils.NetworkUtils
 import com.nadmm.airports.utils.SystemUtils
 import com.nadmm.airports.utils.UiUtils
 import com.nadmm.airports.utils.forEach
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -119,8 +121,8 @@ class LibraryPageFragment : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                LibraryService.Events.events.collect { result ->
-                    val action = result.getString(LibraryService.ACTION) ?: ""
+                CoroutineIntentService.Events.events.filterIsInstance<LibraryService.Result>().collect { result ->
+                    val action = result.action
                     if (action == LibraryService.ACTION_DOWNLOAD_PROGRESS) {
                         handleProgress(result)
                     } else {
@@ -240,10 +242,10 @@ class LibraryPageFragment : FragmentBase() {
         }
     }
 
-    private fun handleBook(result: Bundle) {
-        val pdfName = result.getString(LibraryService.BOOK_NAME)
+    private fun handleBook(result: LibraryService.Result) {
+        val pdfName = result.bookName
         mBookRowMap[pdfName]?.let {
-            val path = result.getString(LibraryService.PDF_PATH)
+            val path = result.pdfPath
             showStatus(it, path != null)
             it.setTag(R.id.LIBRARY_PDF_PATH, path)
             if (path != null) {
@@ -251,24 +253,24 @@ class LibraryPageFragment : FragmentBase() {
             } else {
                 unregisterForContextMenu(it)
             }
-            val action = result.getString(LibraryService.ACTION)
+            val action = result.action
             if (action == LibraryService.ACTION_GET_BOOK && path != null) {
                 SystemUtils.startPDFViewer(requireContext(), path)
             }
         }
     }
 
-    private fun handleProgress(result: Bundle) {
-        val name = result.getString(NetworkUtils.CONTENT_NAME)
+    private fun handleProgress(result: LibraryService.Result) {
+        val name = result.contentName
         mBookRowMap[name]?.let {
             with(LibraryRowItemBinding.bind(it)) {
                 progress.visibility = View.VISIBLE
-                val length = result.getInt(NetworkUtils.CONTENT_LENGTH, 0)
+                val length = result.contentLength
                 progress.isIndeterminate = (length == 0)
                 if (progress.max != length) {
                     progress.max = length
                 }
-                val current = result.getInt(NetworkUtils.CONTENT_PROGRESS, 0)
+                val current = result.contentProgress
                 progress.progress = current
                 if (current == length) {
                     progress.visibility = View.GONE

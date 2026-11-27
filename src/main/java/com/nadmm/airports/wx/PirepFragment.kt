@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,8 +75,8 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
 
     override fun requestDataRefresh() = fetchPirep(true)
 
-    override fun processResult(result: Bundle) {
-        val type = result.getString(NoaaService.TYPE)
+    override fun processResult(result: NoaaService.Result) {
+        val type = result.type
         if (NoaaService.TYPE_TEXT == type) {
             val pirep = getResultObject(result, Pirep::class.java)
             showPirep(pirep)

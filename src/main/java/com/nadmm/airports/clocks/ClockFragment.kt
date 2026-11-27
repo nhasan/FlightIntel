@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,8 +55,8 @@ class ClockFragment : FragmentBase() {
         return createContentView(view)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         mHome = activityBase.prefHomeAirport
         viewLifecycleOwner.lifecycleScope.launch {
             val result = withContext(Dispatchers.IO) {
@@ -152,7 +152,7 @@ class ClockFragment : FragmentBase() {
 
     private fun setCursor(c: Cursor?) {
         if (c != null && c.moveToFirst()) {
-            mHomeTzId = c.getString(c.getColumnIndex(Airports.TIMEZONE_ID))
+            mHomeTzId = c.getString(c.getColumnIndexOrThrow(Airports.TIMEZONE_ID))
         }
         if (mHomeTzId.isNullOrBlank()) {
             var v = findViewById<View>(R.id.home_time_label)

@@ -19,28 +19,41 @@
 # * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # */
 
+# Builds tfr_list.xml for the app from the FAA TFR site.
+#
+# Usage: load_tfr.pl [output_dir]
+#
+# Writes tfr_list.xml and tfr_control.txt to output_dir, which defaults to the
+# web root of the swag container on api.flightintel.com.
+#
+# The TFR list comes from the tfr.faa.gov JSON API, and each TFR's details from
+# its XNOTAM XML file on the same site.
+#
 # Ubuntu package dependencies
-#    libhtml-linkextractor-perl
 #    liblwp-protocol-https-perl
 #    libtext-autoformat-perl
 #    libxml-parser-perl
+#    libxml-libxml-perl
 
 use strict;
 use warnings;
 use POSIX;
-use HTML::LinkExtor;
-use LWP::Simple;
+use JSON::PP;
+use LWP::UserAgent;
 use Text::Autoformat;
 use XML::Parser;
 use XML::LibXML;
 use v5.10;
 
-my $TFR_URL_BASE = "https://tfr.faa.gov/tfr2/";
-my $TFR_URL = "$TFR_URL_BASE/list.html";
+my $TFR_LIST_URL = "https://tfr.faa.gov/tfrapi/getTfrList";
+my $TFR_DETAIL_URL = "https://tfr.faa.gov/download/detail_%s.xml";
 my $FEET_PER_METER = 3.28084;
-my $TFR_OUTPUT_FILE = "/var/www/api.flightintel.com/html/data/tfr_list.xml";
+my $TFR_OUTPUT_DIR = shift @ARGV // "$ENV{HOME}/sw/containers/swag/www/data";
+my $TFR_OUTPUT_FILE = "$TFR_OUTPUT_DIR/tfr_list.xml";
+my $TFR_CONTROL_FILE = "$TFR_OUTPUT_DIR/tfr_control.txt";
 
-my %links = ();
+# TFR type from the list API, used in place of parsing txtDescrModern
+my $list_type;
 
 # Order of strings is important
 my @tfr_types = ("Special", "Security", "Space Operations", "VIP", "Hazards", "Airshow");
@@ -74,18 +87,16 @@ sub capitalize($)
     return $string;
 }
 
-sub cb {
-    my($tag, %link) = @_;
-    if ($tag eq "a") {
-        my $href = $link{href};
-        if ($href =~ /save_pages/) {
-            $href =~ s/\.html/.xml/g;
-            $links{$href}++;
-        }
-    }
+# Maps a list API type such as "SPACE OPERATIONS" to the names the app has
+# always shown, such as "Space Operations".
+sub tfr_type($)
+{
+    my ( $type ) = @_;
+    return undef if !defined $type or $type eq "";
+    return "VIP" if $type eq "VIP";
+    return "Airshow" if $type =~ /^AIR SHOW/;
+    return join( " ", map { ucfirst lc } split( / /, $type ) );
 }
-
-my $LX = new HTML::LinkExtor(\&cb, $TFR_URL_BASE);
 
 sub handle_start() {
     shift;
@@ -185,6 +196,12 @@ sub handle_end() {
         $tfr_elem->appendChild($node); 
     }
     elsif ($elem eq "txtDescrModern" ) {
+        if (defined $list_type) {
+            $node = $doc->createElement("TYPE");
+            $node->appendTextNode($list_type);
+            $tfr_elem->appendChild($node);
+            return;
+        }
         foreach my $tfr_type (@tfr_types) {
             if ($text =~ /\>$tfr_type\</) {
                 $node = $doc->createElement("TYPE");
@@ -223,7 +240,8 @@ sub handle_end() {
             my $val = $valDistVerLower[$index];
 
             if ($uomDistVerLower[$index] eq "M") {
-                $valDistVerLower[$index] *= $FEET_PER_METER;
+                # Whole feet: the app parses altitudes as integers
+                $valDistVerLower[$index] = int($valDistVerLower[$index] * $FEET_PER_METER + 0.5);
             }
             elsif ($uomDistVerLower[$index] eq "FL") {
                 $valDistVerLower[$index] *= 100;
@@ -236,7 +254,7 @@ sub handle_end() {
                 $codeDistVerLower[$index] = "M";
             }
             if ($uomDistVerUpper[$index] eq "M") {
-                $valDistVerUpper[$index] *= $FEET_PER_METER;
+                $valDistVerUpper[$index] = int($valDistVerUpper[$index] * $FEET_PER_METER + 0.5);
             }
             elsif ($uomDistVerUpper[$index] eq "FL") {
                 $valDistVerUpper[$index] *= 100;
@@ -290,23 +308,47 @@ my $parser = new XML::Parser (Handlers => {
                               Default => \&handle_default,
                             });
 
-my $tfr_html = get($TFR_URL) or die;
+my $ua = LWP::UserAgent->new( timeout => 30 );
 
-$LX->parse($tfr_html);
+my $response = $ua->get($TFR_LIST_URL);
+die "Unable to fetch $TFR_LIST_URL: ".$response->status_line."\n"
+    unless $response->is_success;
+my $list = JSON::PP->new->decode($response->decoded_content);
 
 my $seq = 0;
+my $failed = 0;
+my %seen = ();
 my $now = strftime "%FT%TZ", gmtime time;
 $doc = XML::LibXML::Document->new("1.0", "UTF-8");
 $root = $doc->createElement("TFRList");
 
-foreach my $url (keys %links) {
-    if (my $xml = get($url) ) {
+foreach my $entry (@$list) {
+    my $notam_id = $entry->{notam_id} or next;
+    next if $seen{$notam_id}++;
+
+    (my $file_id = $notam_id) =~ s{/}{_}g;
+    my $url = sprintf($TFR_DETAIL_URL, $file_id);
+    $response = $ua->get($url);
+    if (!$response->is_success) {
+        print "Failed  $url: ".$response->status_line."\n";
+        $failed++;
+        next;
+    }
+
+    $list_type = tfr_type($entry->{type});
+    # A malformed file must not stop the rest of the list from loading
+    if (eval { $parser->parse($response->content); 1 }) {
         print "Fetched $url\n";
         $seq++;
-        $parser->parse($xml);
     } else {
-        print "Failed  $url\n";
+        print "Failed  $url: $@";
+        $failed++;
+        # Drop the partial TFR element the parser may have started
+        $root->removeChild($tfr_elem)
+            if defined $tfr_elem and $tfr_elem->parentNode
+                and $tfr_elem->parentNode->isSameNode($root);
     }
+    undef $tfr_elem;
 }
 
 $root->setAttribute("count", $seq);
@@ -314,8 +356,21 @@ $root->setAttribute("timestamp", $now);
 $doc->setDocumentElement($root);
 
 if ($seq > 0) {
-    open(OUTPUT, ">$TFR_OUTPUT_FILE") or die;
-    print OUTPUT $doc->toString(1);
+    # Write to a temporary file and rename it, so the app never downloads a
+    # partly written list.
+    write_file($TFR_OUTPUT_FILE, $doc->toString(1));
+    write_file($TFR_CONTROL_FILE, "Loaded $seq TFRs");
 }
 
-print "Loaded $seq TFRs\n";
+sub write_file
+{
+    my ( $file, $content ) = @_;
+    my $tmp_file = "$file.tmp";
+    open(my $out, ">", $tmp_file) or die "Unable to write $tmp_file: $!\n";
+    print $out $content;
+    close($out) or die "Unable to write $tmp_file: $!\n";
+    rename($tmp_file, $file) or die "Unable to rename $tmp_file: $!\n";
+}
+
+print "Loaded $seq TFRs, $failed failed\n";
+exit($seq > 0 ? 0 : 1);

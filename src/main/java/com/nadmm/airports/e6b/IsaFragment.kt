@@ -25,8 +25,6 @@ import android.view.ViewGroup
 import com.google.android.material.textfield.TextInputLayout
 import com.nadmm.airports.R
 import com.nadmm.airports.utils.WxUtils
-import kotlin.math.exp
-import kotlin.math.pow
 
 class IsaFragment : E6bFragmentBase() {
     private var mAltitudeEdit: TextInputLayout? = null
@@ -66,7 +64,7 @@ class IsaFragment : E6bFragmentBase() {
 
     override fun processInput() {
         try {
-            var altitude = parseAltitude(mAltitudeEdit)
+            val altitude = parseAltitude(mAltitudeEdit)
             var isaTempC = -56.5f
             if (altitude <= WxUtils.TROPOPAUSE_FT) {
                 isaTempC = (15.0 - 0.0019812 * altitude).toFloat()
@@ -74,13 +72,7 @@ class IsaFragment : E6bFragmentBase() {
             val isaTempF = WxUtils.celsiusToFahrenheit(isaTempC)
             showDecimalValue(mTemperatureCEdit!!, isaTempC)
             showDecimalValue(mTemperatureFEdit!!, isaTempF)
-            val isaPressureInHg: Double
-            if (altitude < WxUtils.TROPOPAUSE_FT) {
-                isaPressureInHg = WxUtils.ISA_PRESSURE_HG * (1 - 6.8755856e-6 * altitude).pow(5.2558797)
-            } else {
-                altitude -= WxUtils.TROPOPAUSE_FT
-                isaPressureInHg = WxUtils.ISA_PRESSURE_HG * 0.2233609 * exp(-4.806346 * 10e-5 * altitude)
-            }
+            val isaPressureInHg = WxUtils.isaPressureInHg(altitude.toDouble())
             val isaPressureMbar = isaPressureInHg * WxUtils.HG_TO_MBAR
             showDecimalValue(mPressureInEdit!!, isaPressureInHg, 2)
             showDecimalValue(mPressureMbEdit!!, isaPressureMbar)
