@@ -40,7 +40,7 @@ class IcingFragment
         private val types = mapOf(
             "F00_cip" to "Current",
             "F01_fip" to "1 Hour",
-            "F02_fip" to "2 hour",
+            "F02_fip" to "2 Hour",
             "F03_fip" to "3 Hour",
             "F06_fip" to "6 Hour",
             "F09_fip" to "9 Hour",

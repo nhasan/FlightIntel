@@ -57,6 +57,7 @@ class IcingService : NoaaService("icing", CACHE_MAX_AGE) {
                 action = action,
                 type = TYPE_GRAPHIC,
                 imageCode = code,
+                imageType = imgType,
                 result = if (imageFile.exists()) imageFile.absolutePath else ""
             )
             Events.post(result)
