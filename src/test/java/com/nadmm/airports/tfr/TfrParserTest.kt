@@ -77,4 +77,66 @@ class TfrParserTest {
         assertNull(shape.dailyStart)
         assertNull(shape.dailyEnd)
     }
+
+    @Test
+    fun parsesAreaDefinitions() {
+        val tfr = parse(
+            """
+            <AREA name="Area A" minalt="0A" maxalt="4999A" active="2026-11-24T21:45:00Z">
+              <PART op="BASE">
+                <CIRCLE lat="39.04861" lon="-84.66778" radius="5" navaid="Falmouth"
+                    navtype="VOR/DME" ident="FLM" bearing="329" distance="29.2"/>
+              </PART>
+              <PART op="SUBTR">
+                <POINT lat="64.23611" lon="-149.23361"/>
+                <ARC dir="CCW" lat="64.28194" lon="-149.27806" radius="3"/>
+                <POINT lat="bad" lon="-149.3"/>
+              </PART>
+            </AREA>
+            <AREA name="Empty"><PART op="BASE"/></AREA>
+            <REASON>Temporary flight restrictions for VIP Movement</REASON>
+            <AUTHORITY>Title 14 CFR section 91.141</AUTHORITY>
+            <FACILITYNAME>Indianapolis Center</FACILITYNAME>
+            <REPLACED reason="Due to change in times">6/9446</REPLACED>
+            <RESTRICTION>No pilots may operate an aircraft</RESTRICTION>
+            <INSTRUCTION>EXC THE FLT OPS LISTED BLW:</INSTRUCTION>
+            <INSTRUCTION>1. ACFT MAY NOT LOITER.</INSTRUCTION>
+            """
+        ).entries.single()
+        assertEquals("Temporary flight restrictions for VIP Movement", tfr.reason)
+        assertEquals("Title 14 CFR section 91.141", tfr.authority)
+        assertEquals("Indianapolis Center", tfr.facilityName)
+        assertEquals("6/9446", tfr.replacedNotamId)
+        assertEquals("Due to change in times", tfr.replacedReason)
+        assertEquals("No pilots may operate an aircraft", tfr.restriction)
+        assertEquals(listOf("EXC THE FLT OPS LISTED BLW:", "1. ACFT MAY NOT LOITER."), tfr.instructions)
+
+        // An area with nothing to define it is dropped
+        val area = tfr.areas.single()
+        assertEquals("Area A", area.name)
+        assertEquals(4999, area.maxAltitude?.feet)
+        assertEquals(1795556700000L, area.activeTime)
+        assertNull(area.expireTime)
+        assertEquals(2, area.parts.size)
+
+        val circle = area.parts[0].vertices.single()
+        assertEquals(false, area.parts[0].excluded)
+        assertEquals(TfrList.TfrVertexType.CIRCLE, circle.type)
+        assertEquals(5.0, circle.radius!!, 0.0)
+        val fix = circle.fix!!
+        assertEquals("Falmouth", fix.navaid)
+        assertEquals("VOR/DME", fix.navaidType)
+        assertEquals("FLM", fix.ident)
+        assertEquals(329, fix.bearing)
+        assertEquals(29.2, fix.distance, 0.0)
+
+        // Cut out of the area, and the bad point is skipped
+        val excluded = area.parts[1]
+        assertTrue(excluded.excluded)
+        assertEquals(
+            listOf(TfrList.TfrVertexType.POINT, TfrList.TfrVertexType.ARC_CCW),
+            excluded.vertices.map { it.type }
+        )
+        assertNull(excluded.vertices[0].fix)
+    }
 }

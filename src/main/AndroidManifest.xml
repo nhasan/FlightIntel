@@ -154,15 +154,6 @@
                 android:value=".tfr.TfrListActivity" />
         </activity>
 
-        <activity
-            android:label=""
-            android:name=".tfr.TfrMapActivity"
-            android:parentActivityName=".tfr.TfrDetailActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".tfr.TfrDetailActivity" />
-        </activity>
-
         <activity android:name=".utils.ExternalStorageActivity" />
 
         <activity

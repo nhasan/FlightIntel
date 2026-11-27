@@ -18,6 +18,7 @@
  */
 package com.nadmm.airports.tfr
 
+import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -29,7 +30,6 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.StaticLayout
 import android.text.TextPaint
-import android.text.format.DateUtils
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
 import android.util.DisplayMetrics
@@ -82,7 +82,18 @@ class TfrMapFragment : FragmentBase() {
             setMultiTouchControls(true)
             isTilesScaledToDpi = true
             minZoomLevel = 3.0
+            // The pager detaches this page from the window when switching tabs
+            // and attaches it again later, so the map must outlive that. It is
+            // shut down in onDestroyView instead.
+            setDestroyMode(false)
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
+            // Drags pan the map rather than swipe to the next page or pull to
+            // refresh; the tabs still switch pages
+            @SuppressLint("ClickableViewAccessibility")
+            setOnTouchListener { v, _ ->
+                v.parent?.requestDisallowInterceptTouchEvent(true)
+                false
+            }
         }
         return createContentView(view)
     }
@@ -131,8 +142,8 @@ class TfrMapFragment : FragmentBase() {
             ?.let { TfrLabelOverlay(it, metrics, TITLE_COLOR) }
         title?.let { map.overlays.add(it) }
         // Bottom right, as the attribution takes the bottom left
-        map.overlays.add(ScaleBarOverlay(map).apply {
-            setUnitsOfMeasure(ScaleBarOverlay.UnitsOfMeasure.imperial)
+        map.overlays.add(NmScaleBarOverlay(map).apply {
+            setUnitsOfMeasure(ScaleBarOverlay.UnitsOfMeasure.nautical)
             setAlignBottom(true)
             setAlignRight(true)
             val offset = (SCALE_BAR_OFFSET_DP * resources.displayMetrics.density).toInt()
@@ -171,18 +182,9 @@ class TfrMapFragment : FragmentBase() {
             expire != null -> lines.add("Until " + TimeUtils.formatDateTimeYear(activity, expire))
         }
         TfrMapLabels.dailyWindow(shape)?.let { (start, end) ->
-            lines.add("Daily " + formatTimeOfDayRange(start, end))
+            lines.add("Daily " + TfrAreaFormat.formatTimeOfDayRange(activity, start, end))
         }
         return lines
-    }
-
-    @Suppress("deprecation")
-    private fun formatTimeOfDayRange(start: Long, end: Long): String {
-        val local = activityBase.prefShowLocalTime
-        var flags = DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_24HOUR
-        if (!local) flags = flags or DateUtils.FORMAT_UTC
-        val range = DateUtils.formatDateRange(requireContext(), start, end, flags)
-        return "$range ${if (local) TimeUtils.localTimeZoneName else "UTC"}"
     }
 
     override fun onResume() {
@@ -271,6 +273,22 @@ class TfrMapFragment : FragmentBase() {
             val start = length
             append(line)
             for (span in spans) setSpan(span, start, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+    }
+
+    /**
+     * The scale bar labeled to the nearest 0.1 NM. osmdroid rounds to whole
+     * NM from 5 NM up; below 0.1 NM it keeps osmdroid's label in feet.
+     */
+    private class NmScaleBarOverlay(map: MapView) : ScaleBarOverlay(map) {
+        override fun scaleBarLengthText(meters: Double): String {
+            val nm = meters / METERS_PER_NM
+            return if (nm >= 0.1) String.format(Locale.getDefault(), "%.1f nm", nm)
+            else super.scaleBarLengthText(meters)
+        }
+
+        companion object {
+            private const val METERS_PER_NM = 1852.0
         }
     }
 

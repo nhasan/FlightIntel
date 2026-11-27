@@ -20,7 +20,12 @@ package com.nadmm.airports.tfr
 
 import com.nadmm.airports.tfr.TfrList.AltitudeType
 import com.nadmm.airports.tfr.TfrList.Tfr
+import com.nadmm.airports.tfr.TfrList.TfrArea
+import com.nadmm.airports.tfr.TfrList.TfrAreaPart
+import com.nadmm.airports.tfr.TfrList.TfrFix
 import com.nadmm.airports.tfr.TfrList.TfrShape
+import com.nadmm.airports.tfr.TfrList.TfrVertex
+import com.nadmm.airports.tfr.TfrList.TfrVertexType
 import org.xml.sax.Attributes
 import org.xml.sax.InputSource
 import org.xml.sax.helpers.DefaultHandler
@@ -55,6 +60,9 @@ class TfrParser {
         private var shapeMinAlt: TfrList.Altitude? = null
         private var shapeMaxAlt: TfrList.Altitude? = null
         private var shapeTimes: List<Long?> = emptyList()
+        private var area: TfrArea? = null
+        private var part: TfrAreaPart? = null
+        private var replacedReason: String? = null
         private val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
         override fun characters(ch: CharArray, start: Int, length: Int) {
             text.append(ch, start, length)
@@ -71,9 +79,22 @@ class TfrParser {
             } else if (qName == "SHAPE") {
                 shapeMinAlt = attributes.getValue("minalt")?.let(::parseAltitude)
                 shapeMaxAlt = attributes.getValue("maxalt")?.let(::parseAltitude)
-                shapeTimes = listOf("active", "expires", "dailystart", "dailyend").map { name ->
-                    attributes.getValue(name)?.let(::parseDateTime)?.takeIf { it < Long.MAX_VALUE }
-                }
+                shapeTimes = parseTimes(attributes)
+            } else if (qName == "AREA") {
+                val times = parseTimes(attributes)
+                area = TfrArea(
+                    attributes.getValue("name")?.trim()?.takeIf { it.isNotEmpty() },
+                    attributes.getValue("minalt")?.let(::parseAltitude),
+                    attributes.getValue("maxalt")?.let(::parseAltitude),
+                    times[0], times[1], times[2], times[3],
+                    ArrayList()
+                )
+            } else if (qName == "PART") {
+                part = TfrAreaPart(attributes.getValue("op") == "SUBTR", ArrayList())
+            } else if (qName == "POINT" || qName == "CIRCLE" || qName == "ARC") {
+                parseVertex(qName, attributes)?.let { part?.vertices?.add(it) }
+            } else if (qName == "REPLACED") {
+                replacedReason = attributes.getValue("reason")
             }
             text.setLength(0)
         }
@@ -109,6 +130,25 @@ class TfrParser {
                 tfr.expireTime = parseDateTime(text.toString())
             } else if (qName == "SHAPE") {
                 parseShape(text.toString())?.let { tfr.shapes.add(it) }
+            } else if (qName == "PART") {
+                part?.let { if (it.vertices.isNotEmpty()) area?.parts?.add(it) }
+                part = null
+            } else if (qName == "AREA") {
+                area?.let { if (it.parts.isNotEmpty()) tfr.areas.add(it) }
+                area = null
+            } else if (qName == "REASON") {
+                tfr.reason = text.toString().trim()
+            } else if (qName == "AUTHORITY") {
+                tfr.authority = text.toString().trim()
+            } else if (qName == "FACILITYNAME") {
+                tfr.facilityName = text.toString().trim()
+            } else if (qName == "REPLACED") {
+                tfr.replacedNotamId = text.toString().trim()
+                tfr.replacedReason = replacedReason?.trim()
+            } else if (qName == "RESTRICTION") {
+                tfr.restriction = text.toString().trim()
+            } else if (qName == "INSTRUCTION") {
+                text.toString().trim().takeIf { it.isNotEmpty() }?.let { tfr.instructions.add(it) }
             } else if (qName.uppercase() == "TFR") {
                 if (!tfr.name.equals("Latest Update", ignoreCase = true)) {
                     if (tfr.modifyTime == 0L) {
@@ -142,6 +182,34 @@ class TfrParser {
                 shapeTimes.getOrNull(2),
                 shapeTimes.getOrNull(3)
             )
+        }
+
+        /** The active, expires, dailystart and dailyend times of an area. */
+        private fun parseTimes(attributes: Attributes): List<Long?> =
+            listOf("active", "expires", "dailystart", "dailyend").map { name ->
+                attributes.getValue(name)?.let(::parseDateTime)?.takeIf { it < Long.MAX_VALUE }
+            }
+
+        private fun parseVertex(qName: String, attributes: Attributes): TfrVertex? {
+            val latitude = attributes.getValue("lat")?.toDoubleOrNull() ?: return null
+            val longitude = attributes.getValue("lon")?.toDoubleOrNull() ?: return null
+            val type = when (qName) {
+                "CIRCLE" -> TfrVertexType.CIRCLE
+                "ARC" -> if (attributes.getValue("dir") == "CCW") TfrVertexType.ARC_CCW
+                    else TfrVertexType.ARC_CW
+                else -> TfrVertexType.POINT
+            }
+            val ident = attributes.getValue("ident")
+            val bearing = attributes.getValue("bearing")?.toIntOrNull()
+            val distance = attributes.getValue("distance")?.toDoubleOrNull()
+            val fix = if (ident != null && bearing != null && distance != null) {
+                TfrFix(attributes.getValue("navaid"), attributes.getValue("navtype"),
+                    ident, bearing, distance)
+            } else {
+                null
+            }
+            return TfrVertex(type, latitude, longitude,
+                attributes.getValue("radius")?.toDoubleOrNull(), fix)
         }
 
         /** Parses an altitude such as "2400M" (MSL) or "0A" (AGL). */

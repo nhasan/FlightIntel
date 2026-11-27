@@ -123,9 +123,11 @@ object TfrMapLabels {
     private const val DAY_MILLIS = 24 * 60 * 60 * 1000L
 
     /** The daily window of an area active only part of each day, else null. */
-    fun dailyWindow(shape: TfrShape): Pair<Long, Long>? {
-        val start = shape.dailyStart ?: return null
-        val end = shape.dailyEnd ?: return null
+    fun dailyWindow(shape: TfrShape): Pair<Long, Long>? = dailyWindow(shape.dailyStart, shape.dailyEnd)
+
+    /** The daily window from [start] to [end] on the first day, else null. */
+    fun dailyWindow(start: Long?, end: Long?): Pair<Long, Long>? {
+        if (start == null || end == null) return null
         return (start to end).takeIf { end > start && end - start < DAY_MILLIS }
     }
 
