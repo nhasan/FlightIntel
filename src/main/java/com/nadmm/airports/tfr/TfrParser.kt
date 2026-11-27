@@ -20,6 +20,7 @@ package com.nadmm.airports.tfr
 
 import com.nadmm.airports.tfr.TfrList.AltitudeType
 import com.nadmm.airports.tfr.TfrList.Tfr
+import com.nadmm.airports.tfr.TfrList.TfrShape
 import org.xml.sax.Attributes
 import org.xml.sax.InputSource
 import org.xml.sax.helpers.DefaultHandler
@@ -29,6 +30,8 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.xml.parsers.SAXParserFactory
+
+private val WHITESPACE = Regex("\\s+")
 
 class TfrParser {
     fun parse(xml: File, tfrList: TfrList) {
@@ -49,6 +52,8 @@ class TfrParser {
     private inner class TfrHandler(private val tfrList: TfrList) : DefaultHandler() {
         private var tfr: Tfr = Tfr()
         private val text: StringBuilder
+        private var shapeMinAlt: TfrList.Altitude? = null
+        private var shapeMaxAlt: TfrList.Altitude? = null
         private val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
         override fun characters(ch: CharArray, start: Int, length: Int) {
             text.append(ch, start, length)
@@ -62,6 +67,9 @@ class TfrParser {
                 tfrList.fetchTime = parseDateTime(attributes.getValue("timestamp"))
             } else if (qName.uppercase() == "TFR") {
                 tfr = Tfr()
+            } else if (qName == "SHAPE") {
+                shapeMinAlt = attributes.getValue("minalt")?.let(::parseAltitude)
+                shapeMaxAlt = attributes.getValue("maxalt")?.let(::parseAltitude)
             }
             text.setLength(0)
         }
@@ -95,8 +103,8 @@ class TfrParser {
                 tfr.activeTime = parseDateTime(text.toString())
             } else if (qName == "EXPIRES") {
                 tfr.expireTime = parseDateTime(text.toString())
-            } else if (qName == "TYPE") {
-                tfr.type = text.toString().trim { it <= ' ' }
+            } else if (qName == "SHAPE") {
+                parseShape(text.toString())?.let { tfr.shapes.add(it) }
             } else if (qName.uppercase() == "TFR") {
                 if (!tfr.name.equals("Latest Update", ignoreCase = true)) {
                     if (tfr.modifyTime == 0L) {
@@ -105,6 +113,39 @@ class TfrParser {
                     tfrList.entries.add(tfr)
                 }
             }
+        }
+
+        /** Parses a shape written as "lat,lon lat,lon ..." in decimal degrees. */
+        private fun parseShape(text: String): TfrShape? {
+            val points = text.trim().split(WHITESPACE).mapNotNull { point ->
+                val (lat, lon) = point.split(',').takeIf { it.size == 2 } ?: return@mapNotNull null
+                val latitude = lat.toDoubleOrNull() ?: return@mapNotNull null
+                val longitude = lon.toDoubleOrNull() ?: return@mapNotNull null
+                if (latitude in -90.0..90.0 && longitude in -180.0..180.0) {
+                    latitude to longitude
+                } else {
+                    null
+                }
+            }
+            if (points.size < 3) return null
+            return TfrShape(
+                points.map { it.first }.toDoubleArray(),
+                points.map { it.second }.toDoubleArray(),
+                shapeMinAlt,
+                shapeMaxAlt
+            )
+        }
+
+        /** Parses an altitude such as "2400M" (MSL) or "0A" (AGL). */
+        private fun parseAltitude(alt: String): TfrList.Altitude? {
+            val value = alt.trim()
+            val feet = value.dropLast(1).toIntOrNull() ?: return null
+            val type = when (value.lastOrNull()) {
+                'A' -> AltitudeType.AGL
+                'M' -> AltitudeType.MSL
+                else -> return null
+            }
+            return TfrList.Altitude(feet, type)
         }
 
         private fun parseDateTime(text: String): Long {

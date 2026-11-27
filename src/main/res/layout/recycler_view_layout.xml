@@ -36,6 +36,7 @@
         android:footerDividersEnabled="false"
         android:clipToPadding="false"
         android:scrollbarStyle="outsideOverlay"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="?attr/listview_margin_bottom"
         android:layout_weight="1"
         android:layout_width="match_parent"

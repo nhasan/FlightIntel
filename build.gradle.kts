@@ -34,6 +34,7 @@ dependencies {
     implementation (libs.kotlinx.coroutines.android)
     implementation (libs.kotlinx.serialization.json)
     implementation (libs.gson)
+    implementation (libs.osmdroid.android)
     coreLibraryDesugaring (libs.desugar.jdk.libs)
     testImplementation (libs.junit)
 }

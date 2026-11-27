@@ -70,6 +70,15 @@ my $TFRAreaGroup;
 my $text;
 my $numGroups;
 
+# Shape of each TFR area. The FAA publishes it in abdMergedArea as a closed
+# polygon with circles and arcs already converted to points.
+my @elem_path;
+my @shape_points;
+my $avx_lat;
+my $avx_lon;
+# Vertical limits of the current area group, by element name
+my %area_alt;
+
 my $reTrim = qr/^\s+|\s+$/;
 
 # LibXML
@@ -98,17 +107,65 @@ sub tfr_type($)
     return join( " ", map { ucfirst lc } split( / /, $type ) );
 }
 
+# Converts an AIXM coordinate such as "080.70527778W" to signed decimal degrees
+# rounded to 5 places (about 1 m).
+sub parse_coord($)
+{
+    my ( $coord ) = @_;
+    return undef unless defined $coord and $coord =~ /^\s*([0-9.]+)\s*([NSEW])\s*$/;
+    my $value = $1;
+    $value = -$value if $2 eq "S" or $2 eq "W";
+    return sprintf( "%.5f", $value ) + 0;
+}
+
+# True when the element being parsed is a direct child of a vertex (Avx) of a
+# merged area. Vertices also hold geoLat/geoLong of reference navaids in Frd,
+# which must be skipped.
+sub in_merged_vertex()
+{
+    return @elem_path >= 3 && $elem_path[-2] eq "Avx" && $elem_path[-3] eq "abdMergedArea";
+}
+
+# Formats a vertical limit like MINALT/MAXALT: whole feet followed by A (AGL)
+# or M (MSL). Flight levels are pressure altitudes, so they count as MSL.
+sub area_alt($)
+{
+    my ( $which ) = @_;
+    my $val = $area_alt{"valDistVer$which"};
+    my $uom = $area_alt{"uomDistVer$which"} // "FT";
+    my $code = $area_alt{"codeDistVer$which"} // "ALT";
+    return undef unless defined $val and $val =~ /^\s*(\d+(?:\.\d+)?)\s*$/;
+    $val = $1;
+    if ($uom eq "M") {
+        $val *= $FEET_PER_METER;
+    }
+    elsif ($uom eq "FL") {
+        $val *= 100;
+        $code = "ALT";
+    }
+    return int($val + 0.5) . ($code eq "HEI" ? "A" : "M");
+}
+
 sub handle_start() {
     shift;
     my ($elem, %attrs) = @_;
     $text = "";
+    push @elem_path, $elem;
 
-    if ($elem eq "Not") {
+    if ($elem eq "abdMergedArea") {
+        @shape_points = ();
+    }
+    elsif ($elem eq "Avx") {
+        undef $avx_lat;
+        undef $avx_lon;
+    }
+    elsif ($elem eq "Not") {
         $tfr_elem = $doc->createElement("TFR");
         $root->appendChild($tfr_elem);
     }
     elsif ($elem eq "TFRAreaGroup") {
         $TFRAreaGroup = 1;
+        %area_alt = ();
     }
     elsif ($elem eq "TfrNot") {
         @valDistVerLower = ();
@@ -133,8 +190,37 @@ sub handle_char() {
 sub handle_end() {
     shift;
     my ($elem) = @_;
+    my $merged_vertex = in_merged_vertex();
+    pop @elem_path;
 
-    if ($elem eq "TFRAreaGroup") {
+    if ($TFRAreaGroup and $elem =~ /^(?:val|uom|code)DistVer(?:Lower|Upper)$/) {
+        $area_alt{$elem} = $text;
+    }
+
+    if ($merged_vertex and $elem eq "geoLat") {
+        $avx_lat = parse_coord($text);
+    }
+    elsif ($merged_vertex and $elem eq "geoLong") {
+        $avx_lon = parse_coord($text);
+    }
+    elsif ($elem eq "Avx" and @elem_path and $elem_path[-1] eq "abdMergedArea") {
+        push @shape_points, "$avx_lat,$avx_lon" if defined $avx_lat and defined $avx_lon;
+    }
+    elsif ($elem eq "abdMergedArea") {
+        # Each SHAPE is one area as "lat,lon lat,lon ..." in decimal degrees,
+        # with the area's own vertical limits when known
+        if (@shape_points >= 3) {
+            $node = $doc->createElement("SHAPE");
+            my $min = area_alt("Lower");
+            my $max = area_alt("Upper");
+            $node->setAttribute("minalt", $min) if defined $min;
+            $node->setAttribute("maxalt", $max) if defined $max;
+            $node->appendTextNode(join(" ", @shape_points));
+            $tfr_elem->appendChild($node);
+        }
+        @shape_points = ();
+    }
+    elsif ($elem eq "TFRAreaGroup") {
         $TFRAreaGroup = 0;
         $numGroups++;
     }
@@ -336,6 +422,7 @@ foreach my $entry (@$list) {
     }
 
     $list_type = tfr_type($entry->{type});
+    @elem_path = ();
     # A malformed file must not stop the rest of the list from loading
     if (eval { $parser->parse($response->content); 1 }) {
         print "Fetched $url\n";

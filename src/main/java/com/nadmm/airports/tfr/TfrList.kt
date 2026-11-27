@@ -39,6 +39,20 @@ class TfrList : Serializable {
         override fun toString() = description
     }
 
+    /** A vertical limit of a TFR area. */
+    class Altitude(val feet: Int, val type: AltitudeType) : Serializable
+
+    /**
+     * One TFR area as a closed polygon in decimal degrees, with the area's own
+     * vertical limits when known.
+     */
+    class TfrShape(
+        val latitudes: DoubleArray,
+        val longitudes: DoubleArray,
+        val minAltitude: Altitude? = null,
+        val maxAltitude: Altitude? = null
+    ) : Serializable
+
     class Tfr : Serializable, Comparable<Tfr> {
         var notamId: String? = null
         var name: String? = null
@@ -53,6 +67,7 @@ class TfrList : Serializable {
         var maxAltitudeFeet: Int = Int.MAX_VALUE
         var maxAltitudeType: AltitudeType = AltitudeType.Unknown
         var location: Location? = null
+        var shapes: ArrayList<TfrShape> = ArrayList()
         var createTime: Long = Long.MAX_VALUE
         var modifyTime: Long = Long.MAX_VALUE
         var activeTime: Long = Long.MAX_VALUE

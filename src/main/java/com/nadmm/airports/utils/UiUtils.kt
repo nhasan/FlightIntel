@@ -258,15 +258,19 @@ object UiUtils {
 
 
     fun setupWindowInsetsListener(view: View) {
+        // Insets are applied again on rotation and similar changes, so add them
+        // to the view's own padding rather than to the padding last applied
+        val paddingLeft = view.paddingLeft
+        val paddingRight = view.paddingRight
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
             val innerPadding = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
                         or WindowInsetsCompat.Type.displayCutout()
             )
             v.setPadding(
-                innerPadding.left+view.paddingLeft,
+                innerPadding.left + paddingLeft,
                 0,
-                innerPadding.right+view.paddingRight,
+                innerPadding.right + paddingRight,
                 innerPadding.bottom)
             insets
         }
