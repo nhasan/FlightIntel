@@ -27,9 +27,8 @@ import android.content.Intent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
+import com.nadmm.airports.utils.UiUtils
 import androidx.core.content.edit
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class DisclaimerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +36,7 @@ class DisclaimerActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.disclaimer_view)
-        setupWindowInsetsListener(findViewById(R.id.root), findViewById(R.id.button_bar))
+        UiUtils.setupButtonBarInsets(findViewById(R.id.root), findViewById(R.id.button_bar))
         val webView = findViewById<WebView>(R.id.disclaimer_content)
         // Transparent, so the screen's theme background shows through the
         // page in light and dark mode alike
@@ -54,23 +53,6 @@ class DisclaimerActivity : AppCompatActivity() {
         btnDisagree.setOnClickListener {
             markDisclaimerAgreed(false)
             finish()
-        }
-    }
-
-    /**
-     * Keeps the content clear of the system bars. The screen's background
-     * shows behind the status bar, and the button bar's runs on behind the
-     * navigation bar.
-     */
-    private fun setupWindowInsetsListener(root: View, buttonBar: View) {
-        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val innerPadding = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
-            )
-            v.setPadding(innerPadding.left, innerPadding.top, innerPadding.right, 0)
-            buttonBar.setPadding(0, 0, 0, innerPadding.bottom)
-            insets
         }
     }
 
