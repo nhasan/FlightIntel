@@ -4,6 +4,7 @@ import android.database.Cursor
 import com.nadmm.airports.data.DatabaseManager.LocationColumns
 import com.nadmm.airports.data.DatabaseManager.DOF
 import com.nadmm.airports.utils.GeoUtils
+import java.util.Locale
 
 data class DofListDataModel(
     val obstacleType: String,
@@ -11,15 +12,19 @@ data class DofListDataModel(
     val aglHeight: Int,
     val markingType: String,
     val lightingType: String,
-    val location: String
+    val location: String,
+    // Where the obstacle is, and how far from the search position in NM,
+    // when the cursor has them
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val distanceNm: Float? = null
 ) {
     companion object {
         fun fromCursor(cursor: Cursor): DofListDataModel {
-            val obstacleType = decodeObstacle(cursor.getString(cursor.getColumnIndexOrThrow(DOF.OBSTACLE_TYPE)))
-            val count = cursor.getInt(cursor.getColumnIndexOrThrow(DOF.COUNT))
-            if (count > 1) {
-               obstacleType.plus(" ($count count)")
-            }
+            val obstacleType = obstacleLabel(
+                cursor.getString(cursor.getColumnIndexOrThrow(DOF.OBSTACLE_TYPE)),
+                cursor.getInt(cursor.getColumnIndexOrThrow(DOF.COUNT))
+            )
             val mslHeight = cursor.getInt(cursor.getColumnIndexOrThrow(DOF.HEIGHT_MSL))
             val aglHeight = cursor.getInt(cursor.getColumnIndexOrThrow(DOF.HEIGHT_AGL))
             val markingType = decodeMarking(cursor.getString(cursor.getColumnIndexOrThrow(DOF.MARKING_TYPE)))
@@ -39,20 +44,62 @@ data class DofListDataModel(
                     append("Location unknown")
                 }
             }
+            val latitude = cursor.getColumnIndex(DOF.LATITUDE_DEGREES)
+                .takeIf { it >= 0 }?.let { cursor.getDouble(it) }
+            val longitude = cursor.getColumnIndex(DOF.LONGITUDE_DEGREES)
+                .takeIf { it >= 0 }?.let { cursor.getDouble(it) }
+            val distanceNm = cursor.getColumnIndex(LocationColumns.DISTANCE)
+                .takeIf { it >= 0 }?.let { cursor.getFloat(it) }
             return DofListDataModel(
                 obstacleType,
                 mslHeight,
                 aglHeight,
                 markingType,
                 lightingType,
-                location
+                location,
+                latitude,
+                longitude,
+                distanceNm
             )
         }
 
-        private fun decodeObstacle(type: String): String {
-            return type.replace("TWR", "TOWER")
-                .replace("BLDG", "BUILDING")
+        /**
+         * The obstacle type, such as "TOWER", with the number of obstacles
+         * when the entry stands for a group of them, such as a tower farm.
+         */
+        fun obstacleLabel(type: String, count: Int): String {
+            val name = decodeObstacle(type)
+            return if (count > 1) "$name ($count obstacles)" else name
         }
+
+        /**
+         * The obstacle type in title case, such as "Utility Pole", with the
+         * FAA's abbreviated and cut-off names written out in full.
+         */
+        private fun decodeObstacle(type: String): String {
+            val name = TYPE_NAMES[type.trim()] ?: type.replace("TWR", "TOWER")
+                .replace("BLDG", "BUILDING")
+            return titleCase(name)
+        }
+
+        // Words capitalized at each space or hyphen, so "T-L TOWER" stays "T-L Tower"
+        private fun titleCase(text: String): String =
+            text.lowercase(Locale.US).split(Regex("(?<=[ -])")).joinToString("") { word ->
+                word.replaceFirstChar { it.titlecase(Locale.US) }
+            }
+
+        // Types that are abbreviated, or cut off by the field length
+        private val TYPE_NAMES = mapOf(
+            "VERTICAL STRUCTUR" to "VERTICAL STRUCTURE",
+            "NATURAL GAS SYSTE" to "NATURAL GAS SYSTEM",
+            "LGTHOUSE" to "LIGHTHOUSE",
+            "GEN UTIL" to "GENERAL UTILITY",
+            "ELEC SYS" to "ELECTRICAL SYSTEM",
+            "CTRL TWR" to "CONTROL TOWER",
+            "COOL TWR" to "COOLING TOWER",
+            "AG EQUIP" to "AGRICULTURAL EQUIPMENT",
+            "MET" to "METEOROLOGICAL TOWER",
+        )
 
         private fun decodeMarking(code: String?): String {
             return when (code) {

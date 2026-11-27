@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2018-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2018-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,16 +19,29 @@
 package com.nadmm.airports.dof
 
 import android.os.Bundle
-import com.nadmm.airports.FragmentActivityBase
 import com.nadmm.airports.R
+import com.nadmm.airports.TabPagerActivityBase
+import com.nadmm.airports.data.DatabaseManager.LocationColumns
 
-class NearbyObstaclesActivity : FragmentActivityBase() {
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
+/** Obstacles near the device's location, or a location passed in, as a list and a map. */
+class NearbyObstaclesActivity : TabPagerActivityBase() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setActionBarTitle("Nearby Obstacles",
+            "Within ${NearbyObstaclesFragment.RADIUS_NM} NM radius")
         val args = intent.extras
-        addFragment(NearbyObstaclesFragment::class.java, args)
+        addTab("List", NearbyObstaclesFragment::class.java, args)
+        addTab("Map", NearbyObstaclesMapFragment::class.java, args)
     }
 
+    // Opened for a location, such as from an airport's details, it is a
+    // detail screen with a back arrow rather than the drawer's Obstacles screen
     override val selfNavDrawerItem: Int
-        get() = R.id.navdrawer_dof
+        get() = if (intent.hasExtra(LocationColumns.LOCATION)) NAVDRAWER_ITEM_INVALID
+            else R.id.navdrawer_dof
+
+    companion object {
+        /** A name for the location passed in, such as an airport's, shown on the map. */
+        const val EXTRA_PLACE_NAME = "PLACE_NAME"
+    }
 }

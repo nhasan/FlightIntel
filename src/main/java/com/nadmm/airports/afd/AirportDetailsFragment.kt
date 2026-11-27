@@ -64,7 +64,7 @@ import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.databinding.AirportDetailViewBinding
 import com.nadmm.airports.databinding.RunwayDetailItemBinding
 import com.nadmm.airports.datis.DatisFragment
-import com.nadmm.airports.dof.NearbyObstaclesFragment
+import com.nadmm.airports.dof.NearbyObstaclesActivity
 import com.nadmm.airports.notams.AirportNotamActivity
 import com.nadmm.airports.utils.ClassBUtils
 import com.nadmm.airports.utils.CoroutineIntentService
@@ -203,7 +203,7 @@ class AirportDetailsFragment : FragmentBase() {
         showRemarks(result)
         showAwosDetails(result)
         showHomeDistance(result)
-        showNearbyFacilities()
+        showNearbyFacilities(apt)
         showAirportInfo()
         showCharts(result)
         showOperationsDetails(result)
@@ -440,14 +440,20 @@ class AirportDetailsFragment : FragmentBase() {
         }
     }
 
-    private fun showNearbyFacilities() {
+    private fun showNearbyFacilities(apt: Cursor) {
         val layout = binding.detailNearbyLayout
 
         arguments?.putParcelable(LocationColumns.LOCATION, mLocation)
         addClickableRow(layout, "Airports", NearbyAirportsFragment::class.java, arguments)
         addClickableRow(layout, "FSS outlets", NearbyFssFragment::class.java, arguments)
         addClickableRow(layout, "Navaids", NearbyNavaidsFragment::class.java, arguments)
-        addClickableRow(layout, "Obstacles", NearbyObstaclesFragment::class.java, arguments)
+        // The Obstacles screen, with its list and map, around this airport
+        val obstacles = Intent(activity, NearbyObstaclesActivity::class.java)
+        obstacles.putExtra(LocationColumns.LOCATION, mLocation)
+        val name = apt.getString(apt.getColumnIndexOrThrow(Airports.FACILITY_NAME))
+        obstacles.putExtra(NearbyObstaclesActivity.EXTRA_PLACE_NAME,
+            if (name.isNullOrBlank()) mIcaoCode else "$mIcaoCode - $name")
+        addClickableRow(layout, "Obstacles", obstacles)
     }
 
     private fun showAirportInfo() {
