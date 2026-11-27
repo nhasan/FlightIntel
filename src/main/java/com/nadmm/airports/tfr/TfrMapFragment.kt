@@ -18,7 +18,6 @@
  */
 package com.nadmm.airports.tfr
 
-import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -43,58 +42,29 @@ import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.tfr.TfrList.Tfr
 import com.nadmm.airports.tfr.TfrList.TfrShape
+import com.nadmm.airports.utils.OsmMaps
 import com.nadmm.airports.utils.TimeUtils
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
-import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.Polygon
-import org.osmdroid.views.overlay.ScaleBarOverlay
-import java.io.File
 import java.util.Locale
 import kotlin.math.ceil
 
 /** Draws the areas of a TFR on an OpenStreetMap map. */
 class TfrMapFragment : FragmentBase() {
     private var mapView: MapView? = null
+    private var tfr: Tfr? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val context = requireContext()
-        // The OSM tile usage policy requires an identifying user agent. Keep the
-        // tile cache in app storage so no storage permission is needed.
-        Configuration.getInstance().apply {
-            userAgentValue = context.packageName
-            osmdroidBasePath = File(context.cacheDir, "osmdroid")
-            osmdroidTileCache = File(osmdroidBasePath, "tiles")
-        }
-
+        OsmMaps.configure(requireContext())
         val view = inflater.inflate(R.layout.tfr_map_view, container, false)
-        mapView = view.findViewById<MapView>(R.id.tfr_map).apply {
-            setTileSource(TileSourceFactory.MAPNIK)
-            setMultiTouchControls(true)
-            isTilesScaledToDpi = true
-            minZoomLevel = 3.0
-            // The pager detaches this page from the window when switching tabs
-            // and attaches it again later, so the map must outlive that. It is
-            // shut down in onDestroyView instead.
-            setDestroyMode(false)
-            zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
-            // Drags pan the map rather than swipe to the next page or pull to
-            // refresh; the tabs still switch pages
-            @SuppressLint("ClickableViewAccessibility")
-            setOnTouchListener { v, _ ->
-                v.parent?.requestDisallowInterceptTouchEvent(true)
-                false
-            }
-        }
+        mapView = view.findViewById<MapView>(R.id.tfr_map).also { OsmMaps.setUp(it) }
         return createContentView(view)
     }
 
@@ -104,6 +74,7 @@ class TfrMapFragment : FragmentBase() {
         val tfr = BundleCompat.getSerializable(
             requireArguments(), TfrListActivity.EXTRA_TFR, Tfr::class.java
         )
+        this.tfr = tfr
 
         val shapes = tfr?.shapes.orEmpty()
         val points = shapes.map { shape ->
@@ -141,15 +112,7 @@ class TfrMapFragment : FragmentBase() {
         val title = tfr?.let { titleText(it, it.formatTimeRange(activityBase)) }
             ?.let { TfrLabelOverlay(it, metrics, TITLE_COLOR) }
         title?.let { map.overlays.add(it) }
-        // Bottom right, as the attribution takes the bottom left
-        map.overlays.add(NmScaleBarOverlay(map).apply {
-            setUnitsOfMeasure(ScaleBarOverlay.UnitsOfMeasure.nautical)
-            setAlignBottom(true)
-            setAlignRight(true)
-            val offset = (SCALE_BAR_OFFSET_DP * resources.displayMetrics.density).toInt()
-            setScaleBarOffset(offset, offset)
-        })
-        map.overlays.add(CopyrightOverlay(requireContext()))
+        OsmMaps.addScaleAndAttribution(map)
 
         val all = points.flatten()
         if (all.isNotEmpty()) {
@@ -190,6 +153,8 @@ class TfrMapFragment : FragmentBase() {
     override fun onResume() {
         super.onResume()
         mapView?.onResume()
+        // The name is on the map, so the action bar shows where the TFR is
+        tfr?.let { setActionBarSubtitle(it.formatLocation()) }
     }
 
     override fun onPause() {
@@ -213,7 +178,6 @@ class TfrMapFragment : FragmentBase() {
         private const val TITLE_COLOR = Color.BLACK
         private const val LABEL_TEXT_SP = 14f
         private const val LABEL_HALO_DP = 3f
-        private const val SCALE_BAR_OFFSET_DP = 12f
         private const val TITLE_MARGIN_DP = 12f
         // Name, type, altitudes and times, smaller than the NOTAM id
         private const val SMALL_SCALE = 0.85f
@@ -273,22 +237,6 @@ class TfrMapFragment : FragmentBase() {
             val start = length
             append(line)
             for (span in spans) setSpan(span, start, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-    }
-
-    /**
-     * The scale bar labeled to the nearest 0.1 NM. osmdroid rounds to whole
-     * NM from 5 NM up; below 0.1 NM it keeps osmdroid's label in feet.
-     */
-    private class NmScaleBarOverlay(map: MapView) : ScaleBarOverlay(map) {
-        override fun scaleBarLengthText(meters: Double): String {
-            val nm = meters / METERS_PER_NM
-            return if (nm >= 0.1) String.format(Locale.getDefault(), "%.1f nm", nm)
-            else super.scaleBarLengthText(meters)
-        }
-
-        companion object {
-            private const val METERS_PER_NM = 1852.0
         }
     }
 

@@ -21,6 +21,7 @@ package com.nadmm.airports.dof
 import android.database.Cursor
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.nadmm.airports.LocationListFragmentBase
@@ -28,24 +29,32 @@ import com.nadmm.airports.data.DatabaseManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class NearbyObstaclesFragment : LocationListFragmentBase() {
-    private val mRadius = 5
+    private val mRadius = RADIUS_NM
+    // Shared with the Map tab, which draws the obstacles this list finds
+    private val viewModel: NearbyObstaclesViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setEmptyText("No obstacles found nearby.")
-        setActionBarTitle("Nearby Obstacles", "")
-        setActionBarSubtitle(String.format(Locale.US, "Within %d NM radius", mRadius))
     }
 
     override fun startLocationTask() {
+        val location = lastLocation ?: return
         viewLifecycleOwner.lifecycleScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                doQuery()
+            val (cursor, obstacles) = withContext(Dispatchers.IO) {
+                val c = doQuery()[0]
+                val list = ArrayList<DofListDataModel>(c.count)
+                if (c.moveToFirst()) {
+                    do {
+                        list.add(DofListDataModel.fromCursor(c))
+                    } while (c.moveToNext())
+                }
+                c to list
             }
-            setCursor(result[0])
+            setCursor(cursor)
+            viewModel.publish(NearbyObstacles(location, mRadius, obstacles))
         }
     }
 
@@ -57,5 +66,9 @@ class NearbyObstaclesFragment : LocationListFragmentBase() {
         val db = getDatabase(DatabaseManager.DB_DOF)
         val c: Cursor = NearbyDofCursor(db, lastLocation!!, mRadius)
         return arrayOf(c)
+    }
+
+    companion object {
+        const val RADIUS_NM = 5
     }
 }

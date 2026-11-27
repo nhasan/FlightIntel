@@ -43,6 +43,8 @@ class NearbyDofCursor(db: SQLiteDatabase, location: Location, radius: Int) : Mat
         var markingType: String? = null
         var bearing = 0f
         var distance = 0f
+        var latitude = 0.0
+        var longitude = 0.0
 
         fun setFromCursor(c: Cursor, location: Location, declination: Float) {
             oasCode = c.getString(c.getColumnIndexOrThrow(DOF.OAS_CODE))
@@ -53,26 +55,23 @@ class NearbyDofCursor(db: SQLiteDatabase, location: Location, radius: Int) : Mat
             heightMsl = c.getInt(c.getColumnIndexOrThrow(DOF.HEIGHT_MSL))
             lightingType = c.getString(c.getColumnIndexOrThrow(DOF.LIGHTING_TYPE))
             markingType = c.getString(c.getColumnIndexOrThrow(DOF.MARKING_TYPE))
+            latitude = c.getDouble(c.getColumnIndexOrThrow(DOF.LATITUDE_DEGREES))
+            longitude = c.getDouble(c.getColumnIndexOrThrow(DOF.LONGITUDE_DEGREES))
             val results = FloatArray(2)
             Location.distanceBetween(
                 location.latitude,
                 location.longitude,
-                c.getDouble(c.getColumnIndexOrThrow(DOF.LATITUDE_DEGREES)),
-                c.getDouble(c.getColumnIndexOrThrow(DOF.LONGITUDE_DEGREES)),
+                latitude,
+                longitude,
                 results
             )
             distance = results[0] / GeoUtils.METERS_PER_NAUTICAL_MILE
             bearing = (results[1] + declination + 360) % 360
         }
 
-        override fun compareTo(other: DOFData): Int {
-            if (distance < other.distance) {
-                return -1
-            } else if (distance > other.distance) {
-                return 1
-            }
-            return 0
-        }
+        // Tallest above ground first, then the closest
+        override fun compareTo(other: DOFData): Int =
+            compareValuesBy(this, other, { -it.heightAgl }, { it.distance })
     }
 
     companion object {
@@ -87,7 +86,9 @@ class NearbyDofCursor(db: SQLiteDatabase, location: Location, radius: Int) : Mat
             DOF.LIGHTING_TYPE,
             DOF.MARKING_TYPE,
             LocationColumns.BEARING,
-            LocationColumns.DISTANCE
+            LocationColumns.DISTANCE,
+            DOF.LATITUDE_DEGREES,
+            DOF.LONGITUDE_DEGREES
         )
     }
 
@@ -105,7 +106,7 @@ class NearbyDofCursor(db: SQLiteDatabase, location: Location, radius: Int) : Mat
                 dofList[c.position] = obst
             } while (c.moveToNext())
 
-            // Sort the list based on distance from current location
+            // Sort the list by height above ground, tallest first
             Arrays.sort(dofList)
             for (dof in dofList) {
                 if (dof!!.distance <= radius) {
@@ -122,6 +123,8 @@ class NearbyDofCursor(db: SQLiteDatabase, location: Location, radius: Int) : Mat
                             .add(dof.markingType)
                             .add(dof.bearing)
                             .add(dof.distance)
+                            .add(dof.latitude)
+                            .add(dof.longitude)
                     }
                 }
             }
