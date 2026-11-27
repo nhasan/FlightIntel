@@ -26,9 +26,11 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
 import android.widget.TextView
@@ -36,6 +38,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.isNotEmpty
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -138,8 +141,23 @@ abstract class FragmentBase : Fragment(), IRefreshable {
         activityBase.setContentShown(shown)
     }
 
+    /**
+     * Shows [msg] in place of this fragment's content, for when there is
+     * nothing to show. Only this fragment's content changes, so the rest of
+     * the screen, and going back from it, keep working.
+     */
     protected fun setContentMsg(msg: String) {
-        activityBase.setContentMsg(msg)
+        val container = view?.findViewById<ViewGroup>(R.id.INTERNAL_FRAGMENT_CONTAINER_ID) ?: return
+        val tv = TextView(requireContext()).apply {
+            TextViewCompat.setTextAppearance(this, R.style.TextSmall)
+            gravity = Gravity.CENTER
+            val padding = resources.getDimensionPixelSize(R.dimen.item_padding)
+            setPadding(padding, padding, padding, padding)
+            text = msg
+        }
+        container.removeAllViews()
+        container.addView(tv, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
     }
 
     protected fun setFragmentContentShown(shown: Boolean) {

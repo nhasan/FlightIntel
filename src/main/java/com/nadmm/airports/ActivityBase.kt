@@ -547,14 +547,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         }
     }
 
-    fun setContentMsg(msg: String) {
-        val tv = TextView(this)
-        tv.gravity = Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL
-        tv.setPadding(dpToPx(12f), dpToPx(8f), dpToPx(12f), dpToPx(8f))
-        tv.text = msg
-        setContentView(createContentView(tv))
-    }
-
     fun replaceFragment(clss: Class<*>, args: Bundle?, addToStack: Boolean): Fragment {
         return replaceFragment(clss, args, R.id.fragment_container, addToStack)
     }

@@ -166,12 +166,12 @@ class NearbyFssFragment : FragmentBase() {
                 )
             } while (com.moveToNext())
         } else {
-            setContentMsg(
-                String.format(
-                    Locale.US,
-                    "No FSS outlets found within %dNM radius.", mRadius
-                )
-            )
+            // Under the airport's title, so it is clear which airport
+            val tv = inflate<TextView>(R.layout.detail_row_simple)
+            tv.text = String.format(Locale.US, "No FSS outlets found within %d NM radius.", mRadius)
+            val padding = resources.getDimensionPixelSize(R.dimen.item_padding)
+            tv.setPadding(0, padding, 0, padding)
+            detailLayout!!.addView(tv)
         }
     }
 
