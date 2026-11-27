@@ -64,6 +64,12 @@
         <item name="android:textColor">#ffffff</item>
     </style>
 
+    <!-- Smaller and lighter than the title, so it reads as secondary -->
+    <style name="TextAppearance.FlightIntel.ToolbarSubtitle"
+            parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
     <style name="TextLabel" parent="TextMedium">
     </style>
 
