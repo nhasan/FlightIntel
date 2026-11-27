@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
 /*
  * FlightIntel for Pilots
  *
@@ -16,17 +18,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.nadmm.airports.tfr
-
-import android.os.Bundle
-import com.nadmm.airports.FragmentActivityBase
-
-/** Shows the areas of a TFR on an OpenStreetMap map. */
-class TfrMapActivity : FragmentActivityBase() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val args = intent.extras ?: return finish()
-        setActionBarTitle("TFR Map", null)
-        addFragment(TfrMapFragment::class.java, args)
-    }
-}
+ -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/TextLabel"
+        android:paddingTop="@dimen/section_margin"
+        android:paddingBottom="@dimen/label_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />

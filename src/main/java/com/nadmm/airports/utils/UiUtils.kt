@@ -257,6 +257,24 @@ object UiUtils {
     }
 
 
+    /**
+     * For a full-screen page with a button bar at the bottom, such as the
+     * disclaimer and About screens: keeps [root]'s content clear of the system
+     * bars, with its background showing behind the status bar, and runs
+     * [buttonBar]'s background on behind the navigation bar.
+     */
+    fun setupButtonBarInsets(root: View, buttonBar: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val innerPadding = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.setPadding(innerPadding.left, innerPadding.top, innerPadding.right, 0)
+            buttonBar.setPadding(0, 0, 0, innerPadding.bottom)
+            insets
+        }
+    }
+
     fun setupWindowInsetsListener(view: View) {
         // Insets are applied again on rotation and similar changes, so add them
         // to the view's own padding rather than to the padding last applied

@@ -18,52 +18,41 @@
  */
 package com.nadmm.airports
 
+import android.graphics.Color
 import android.os.Bundle
 import android.webkit.WebView
 import android.widget.Button
 import android.view.View
 import android.content.Intent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.nadmm.airports.utils.UiUtils
 import androidx.core.content.edit
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class DisclaimerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Like ActivityBase, so this screen is edge-to-edge on all versions
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.disclaimer_view)
-        val root = findViewById<View>(R.id.root)
-        setupWindowInsetsListener(root)
+        UiUtils.setupButtonBarInsets(findViewById(R.id.root), findViewById(R.id.button_bar))
         val webView = findViewById<WebView>(R.id.disclaimer_content)
+        // Transparent, so the screen's theme background shows through the
+        // page in light and dark mode alike
+        webView.setBackgroundColor(Color.TRANSPARENT)
         webView.loadUrl("file:///android_asset/disclaimer.html")
         val btnAgree = findViewById<Button>(R.id.btn_agree)
-        btnAgree.setOnClickListener { v: View? ->
+        btnAgree.setOnClickListener {
             markDisclaimerAgreed(true)
             val intent = Intent(this@DisclaimerActivity, FlightIntel::class.java)
             startActivity(intent)
             finish()
         }
         val btnDisagree = findViewById<Button>(R.id.btn_disagree)
-        btnDisagree.setOnClickListener { v: View? ->
+        btnDisagree.setOnClickListener {
             markDisclaimerAgreed(false)
             finish()
-        }
-    }
-
-    fun setupWindowInsetsListener(view: View) {
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val innerPadding = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
-            )
-            v.setPadding(
-                innerPadding.left,
-                innerPadding.top,
-                innerPadding.right,
-                innerPadding.bottom)
-            insets
         }
     }
 

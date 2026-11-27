@@ -18,18 +18,24 @@
  */
 package com.nadmm.airports
 
+import android.graphics.Color
 import android.os.Bundle
 import android.webkit.WebView
 import android.widget.Button
 import android.view.View
 import android.content.Intent
 import android.net.Uri
+import com.nadmm.airports.utils.UiUtils
 
 class AboutActivity : ActivityBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.about_view)
+        UiUtils.setupButtonBarInsets(findViewById(R.id.root), findViewById(R.id.button_bar))
         val webView = findViewById<WebView>(R.id.about_content)
+        // Transparent, so the theme background shows through the page in
+        // light and dark mode alike
+        webView.setBackgroundColor(Color.TRANSPARENT)
         webView.loadUrl("file:///android_asset/about.html")
         val btnClose = findViewById<Button>(R.id.btn_close)
         btnClose.setOnClickListener { v: View? -> finish() }

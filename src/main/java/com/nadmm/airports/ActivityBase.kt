@@ -107,6 +107,8 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     private lateinit var mInflater: LayoutInflater
     private lateinit var mHandler: Handler
     private lateinit var mPreferences: SharedPreferences
+    // Registered for every screen; the home screens ask with it
+    protected val notificationPermission = NotificationPermission(this)
 
     private val mBackStackChangedListener =
             FragmentManager.OnBackStackChangedListener { this.updateDrawerToggle() }
@@ -242,7 +244,15 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
     override fun onResume() {
         super.onResume()
 
-        mNavigationView?.setCheckedItem(selfNavDrawerItem)
+        // Check only this screen's item. Settings, Downloads and About open on
+        // top of the current screen in their own menu group, so without this
+        // the one tapped stays checked alongside this screen's item on return.
+        mNavigationView?.menu?.let { menu ->
+            for (i in 0 until menu.size()) {
+                val item = menu.getItem(i)
+                item.isChecked = item.itemId == selfNavDrawerItem
+            }
+        }
 
         // Whenever the fragment back stack changes, we may need to update the
         // action bar toggle: only top level screens show the hamburger-like icon, inner

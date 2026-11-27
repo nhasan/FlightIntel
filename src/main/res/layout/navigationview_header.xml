@@ -25,9 +25,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
+    <!-- Full drawer width, with the height that keeps the image's shape -->
     <ImageView
         app:srcCompat="@drawable/navdrawer_header"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </FrameLayout>

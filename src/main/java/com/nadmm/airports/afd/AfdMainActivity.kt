@@ -44,6 +44,12 @@ class AfdMainActivity : TabPagerActivityBase() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // The home screen asks once for permission to show app messages
+        notificationPermission.askOnce()
+    }
+
     private fun getIndex() : Int {
         if (prefAlwaysShowNearby) {
             return tabEntries.indexOfFirst { it.first == R.string.nearby }

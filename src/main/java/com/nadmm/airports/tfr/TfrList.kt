@@ -44,13 +44,58 @@ class TfrList : Serializable {
 
     /**
      * One TFR area as a closed polygon in decimal degrees, with the area's own
-     * vertical limits when known.
+     * vertical limits and effective times when known. Times are in epoch
+     * millis; [dailyStart] and [dailyEnd] give the daily window on the first
+     * day for areas active only part of each day.
      */
     class TfrShape(
         val latitudes: DoubleArray,
         val longitudes: DoubleArray,
         val minAltitude: Altitude? = null,
-        val maxAltitude: Altitude? = null
+        val maxAltitude: Altitude? = null,
+        val activeTime: Long? = null,
+        val expireTime: Long? = null,
+        val dailyStart: Long? = null,
+        val dailyEnd: Long? = null
+    ) : Serializable
+
+    /** A position given as [bearing] degrees from a navaid, at [distance] NM. */
+    class TfrFix(
+        val navaid: String?,
+        val navaidType: String?,
+        val ident: String,
+        val bearing: Int,
+        val distance: Double
+    ) : Serializable
+
+    enum class TfrVertexType { POINT, CIRCLE, ARC_CW, ARC_CCW }
+
+    /**
+     * One step in the definition of an area: a point of a polygon, a circle,
+     * or the center of an arc that runs on to the next point. [radius] is in
+     * NM for circles and arcs.
+     */
+    class TfrVertex(
+        val type: TfrVertexType,
+        val latitude: Double,
+        val longitude: Double,
+        val radius: Double? = null,
+        val fix: TfrFix? = null
+    ) : Serializable
+
+    /** A shape an area is built from, [excluded] when cut out of the others. */
+    class TfrAreaPart(val excluded: Boolean, val vertices: ArrayList<TfrVertex>) : Serializable
+
+    /** One TFR area as the NOTAM defines it, with its limits and times. */
+    class TfrArea(
+        val name: String?,
+        val minAltitude: Altitude?,
+        val maxAltitude: Altitude?,
+        val activeTime: Long?,
+        val expireTime: Long?,
+        val dailyStart: Long?,
+        val dailyEnd: Long?,
+        val parts: ArrayList<TfrAreaPart>
     ) : Serializable
 
     class Tfr : Serializable, Comparable<Tfr> {
@@ -62,6 +107,14 @@ class TfrList : Serializable {
         var facilityType: String? = null
         var type: String? = null
         var text: String? = null
+        var reason: String? = null
+        var authority: String? = null
+        var facilityName: String? = null
+        var replacedNotamId: String? = null
+        var replacedReason: String? = null
+        var restriction: String? = null
+        var instructions: ArrayList<String> = ArrayList()
+        var areas: ArrayList<TfrArea> = ArrayList()
         var minAltitudeFeet: Int = Int.MAX_VALUE
         var minAltitudeType: AltitudeType = AltitudeType.Unknown
         var maxAltitudeFeet: Int = Int.MAX_VALUE

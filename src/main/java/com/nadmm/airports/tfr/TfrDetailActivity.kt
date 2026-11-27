@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2012-2022 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2012-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,22 @@
 package com.nadmm.airports.tfr
 
 import android.os.Bundle
-import com.nadmm.airports.FragmentActivityBase
+import androidx.core.os.BundleCompat
+import com.nadmm.airports.TabPagerActivityBase
+import com.nadmm.airports.tfr.TfrList.Tfr
 
-class TfrDetailActivity : FragmentActivityBase() {
+/** A TFR's details and, when it has areas to draw, its map, as swipeable tabs. */
+class TfrDetailActivity : TabPagerActivityBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val args = intent.extras
-        addFragment(TfrDetailFragment::class.java, args)
+        val args = intent.extras ?: return finish()
+        val tfr = BundleCompat.getSerializable(args, TfrListActivity.EXTRA_TFR, Tfr::class.java)
+            ?: return finish()
+
+        setActionBarTitle("TFR Details", tfr.name)
+        addTab("Text", TfrDetailFragment::class.java, args)
+        if (tfr.shapes.isNotEmpty()) {
+            addTab("Map", TfrMapFragment::class.java, args)
+        }
     }
 }

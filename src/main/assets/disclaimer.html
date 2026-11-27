@@ -1,70 +1,89 @@
+<!DOCTYPE html>
 <html lang="en-US">
 <head>
-    <style type="text/css">
-        .title-text {
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <style>
+        /* The screen behind the page gives the background */
+        html, body {
+            background: transparent;
+        }
+        body {
             color: #333333;
+        }
+        a {
+            color: #1565C0;
+        }
+        .title-text {
             font-size: 1.8em;
             font-weight: bold;
         }
         .secondary-text {
-            font-size: 1.0em;
             color: #666666;
-        }
-        .body-text {
-            font-size: 1.0em;
-            color: #333333;
         }
         .float-left {
             float: left;
             margin-right: 8px;
         }
-        .align-middle {
-            vertical-align: middle;
-        }
-        p {
-            font-size: 1.0em;
+        .header {
+            margin-bottom: 1.5em;
         }
         p.code {
             font-family: monospace;
             font-size: 1.1em;
         }
-        .hilite {
-            font-weight: bold;
-        }
         p.subtitle {
             font-size: 1.1em;
             font-weight: bold;
+        }
+        /* The app's dark theme colors when the system is in dark mode */
+        @media (prefers-color-scheme: dark) {
+            body {
+                color: #E3E2E6;
+            }
+            .secondary-text {
+                color: #C3C6CF;
+            }
+            a {
+                color: #64B5F6;
+            }
         }
     </style>
     <title>Disclaimer</title>
 </head>
 <body>
-    <img src="file:///android_asset/icon.png" class="float-left"  alt="FlightIntel icon"/>
-    <div><span class="title-text">FlightIntel</span><br>
+    <img src="file:///android_asset/icon.png" class="float-left" alt="FlightIntel icon">
+    <div class="header"><span class="title-text">FlightIntel</span><br>
     <span class="secondary-text">Nadeem Hasan &lt;nhasan@nadmm.com&gt;</span>
     </div>
-    <p></p>
+
     <p class="subtitle">Disclaimer</p>
-    <P>This application is informational in nature and is designed to assist pilots and aircrews
-    for flight planning and familiarization. It may be used in conjunction with other
-    pre-flight information sources needed to satisfy all the requirements of 14 CFR 91.103
-    and is not to be considered as a sole source of information to meet all pre-flight action.</P>
-    <p>No express warranty is hereby provided regarding the validity or accuracy of the
-    information presented by this application. Always make sure that you have the current
-    data installed on your device. The author provided no assurance of future availability
-    of the data updates in a timely manner. The author may, at his discretion, choose to stop
-    providing the data updates altogether.</p>
-    <p>The navigation and location information provided by this application shall not be used
-    as a primary means of navigation. It is provided solely to aid in the situational awareness.
-    <p>Use at your own risk. The author shall not be held responsible for any loss or damage
-    caused by the use of this application or the information that it provides.</p>
-    <p>FlightIntel is not in any way affiliated with FAA or any other government agency.</p>
+    <p>FlightIntel is an informational aid for pilots and aircrews, for flight planning and
+    familiarization. Use it alongside the official sources needed to meet 14 CFR 91.103, never
+    as your only source of preflight information.</p>
+    <p>The app and its data are provided "as is", without warranty of any kind, express or
+    implied. Data may be incomplete, out of date or wrong. Make sure the data installed on your
+    device is current. Data updates may stop at any time without notice.</p>
+    <p>TFRs, NOTAMs and weather shown in the app may not be complete or current. Check them with
+    official sources, such as Flight Service (1-800-WX-BRIEF or 1800wxbrief.com), before every
+    flight.</p>
+    <p>Do not use the navigation and location information as a primary means of navigation. It is
+    provided only to aid situational awareness.</p>
+    <p>Use the app at your own risk. The author is not responsible for any loss or damage caused
+    by using the app or the information it provides.</p>
+    <p>FlightIntel is not affiliated with the FAA or any other government agency.</p>
+
     <p class="subtitle">Privacy</p>
-    <p>This application requires access to your device's location to provide information about
-    nearby airports and weather facilities. Your privacy is important to me. Therefore, I
-    want to assure you that the location information is processed locally on your device and
-    is not transmitted to any external server. This app does not collect or store any personal
-    identity data, ensuring that your location cannot be associated with a specific user.</p>
+    <p>FlightIntel uses your device's location to find nearby airports and weather stations. Your
+    location is processed on your device, and your coordinates are not sent anywhere.</p>
+    <p>To show weather, charts, TFRs and maps, the app downloads data from public sources,
+    including the FAA, the National Weather Service (aviationweather.gov), OpenStreetMap and
+    api.flightintel.com. As with any download, these servers see your IP address and what you
+    request, such as a nearby weather station. If you turn on alerts, Google's Firebase Cloud
+    Messaging gives your device a token so alerts can reach it.</p>
+    <p>FlightIntel has no accounts, ads or analytics, and does not collect personal
+    information.</p>
+
     <p class="subtitle">License</p>
     <p class="code">This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -74,6 +93,10 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.</p>
+    <p class="code">You should have received a copy of the GNU General Public License
+    along with this program.  If not, see
+    <a href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>.</p>
+    <p>The source code is available at
+    <a href="https://github.com/nhasan/FlightIntel">github.com/nhasan/FlightIntel</a>.</p>
 </body>
 </html>
-
