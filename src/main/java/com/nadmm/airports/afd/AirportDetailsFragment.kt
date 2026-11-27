@@ -37,6 +37,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.PreferencesActivity
 import com.nadmm.airports.R
+import com.nadmm.airports.WebViewActivity
 import com.nadmm.airports.aeronav.AeroNavService
 import com.nadmm.airports.aeronav.ClassBService
 import com.nadmm.airports.aeronav.DafdService
@@ -477,16 +478,16 @@ class AirportDetailsFragment : FragmentBase() {
         val lat = apt.getString(apt.getColumnIndexOrThrow(Airports.REF_LATTITUDE_DEGREES))
         val lon = apt.getString(apt.getColumnIndexOrThrow(Airports.REF_LONGITUDE_DEGREES))
         if (lat.isNotEmpty() && lon.isNotEmpty()) {
-            // Link to the sectional at VFRMAP if location is available
-            var uri = "http://vfrmap.com/?type=vfrc&lat=$lat&lon=$lon&zoom=10".toUri()
-            var intent = Intent(Intent.ACTION_VIEW, uri)
-            addClickableRow(layout, "$sectional Sectional VFR", null, intent)
-            uri = "http://vfrmap.com/?type=ifrlc&lat=$lat&lon=$lon&zoom=10".toUri()
-            intent = Intent(Intent.ACTION_VIEW, uri)
-            addClickableRow(layout, "Low-altitude IFR", intent)
-            uri = "http://vfrmap.com/?type=ehc&lat=$lat&lon=$lon&zoom=10".toUri()
-            intent = Intent(Intent.ACTION_VIEW, uri)
-            addClickableRow(layout, "High-altitude IFR", intent)
+            // The charts at VFRMap around the airport, shown in the app
+            fun vfrMap(type: String, title: String): Intent = WebViewActivity.intent(
+                requireContext(),
+                "https://vfrmap.com/?type=$type&lat=$lat&lon=$lon&zoom=10",
+                title, mIcaoCode
+            )
+            addClickableRow(layout, "$sectional Sectional VFR", null,
+                vfrMap("vfrc", "$sectional Sectional"))
+            addClickableRow(layout, "Low-altitude IFR", vfrMap("ifrlc", "Low-altitude IFR"))
+            addClickableRow(layout, "High-altitude IFR", vfrMap("ehc", "High-altitude IFR"))
         } else {
             addRow(layout, "Sectional chart", sectional)
         }

@@ -132,6 +132,9 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     protected open val selfNavDrawerItem: Int = NAVDRAWER_ITEM_INVALID
 
+    /** False for screens where search has no place, such as Downloads. */
+    protected open val showsSearch: Boolean = true
+
     var isRefreshing: Boolean
         get() = mSwipeRefreshLayout?.isRefreshing ?: false
         set(refreshing) {
@@ -209,7 +212,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
         addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                // Add menu items here
+                if (!showsSearch) return
                 menuInflater.inflate(R.menu.mainmenu, menu)
 
                 val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
@@ -230,7 +233,9 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
                         true
                     }
                     R.id.menu_search -> true
-                    else -> true
+                    // Not ours: leave it to the menu providers that screens
+                    // and fragments add, which never see it if this claims it
+                    else -> false
                 }
             }
         })
@@ -530,6 +535,10 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         val content = view.findViewById<View>(R.id.INTERNAL_FRAGMENT_CONTAINER_ID)
         content ?: return
 
+        // Already in that state: fading again would only flash the content
+        val showing = content.visibility == View.VISIBLE && progress.visibility == View.GONE
+        if (shown == showing) return
+
         if (shown) {
             if (animation) {
                 progress.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out))
@@ -545,14 +554,6 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
             progress.visibility = View.VISIBLE
             content.visibility = View.GONE
         }
-    }
-
-    fun setContentMsg(msg: String) {
-        val tv = TextView(this)
-        tv.gravity = Gravity.CENTER_HORIZONTAL or Gravity.CENTER_VERTICAL
-        tv.setPadding(dpToPx(12f), dpToPx(8f), dpToPx(12f), dpToPx(8f))
-        tv.text = msg
-        setContentView(createContentView(tv))
     }
 
     fun replaceFragment(clss: Class<*>, args: Bundle?, addToStack: Boolean): Fragment {

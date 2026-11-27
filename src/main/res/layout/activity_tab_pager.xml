@@ -43,6 +43,13 @@
 
             <include layout="@layout/toolbar_actionbar" />
 
+            <!-- Optional content above the tabs, shared by every page -->
+            <FrameLayout
+                android:id="@+id/tab_pager_header"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/sliding_tabs"
                 android:layout_width="match_parent"

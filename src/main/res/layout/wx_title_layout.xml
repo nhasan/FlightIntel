@@ -26,7 +26,7 @@
         android:paddingTop="@dimen/padding_top"
         android:paddingStart="@dimen/padding_left"
         android:paddingEnd="@dimen/padding_right"
-        android:paddingBottom="@dimen/padding_bottom"
+        android:paddingBottom="@dimen/label_padding"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -38,7 +38,6 @@
     <LinearLayout android:id="@+id/header_outer_layout"
             android:orientation="horizontal"
             android:baselineAligned="false"
-            android:paddingBottom="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         <LinearLayout android:id="@+id/header_inner1_layout"
@@ -60,9 +59,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
         </LinearLayout>
+        <!-- The negative margins keep the 48dp touch area without making
+             the row taller than its two lines of text -->
         <CheckBox android:id="@+id/airport_star"
                 app:buttonCompat="@drawable/sl_favourite_24dp"
                 android:gravity="end|bottom"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="-12dp"
+                android:layout_marginBottom="-12dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
     </LinearLayout>

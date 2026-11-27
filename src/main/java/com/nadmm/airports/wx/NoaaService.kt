@@ -91,8 +91,8 @@ abstract class NoaaService(name: String, protected val maxAgeMillis: Long) : Cor
         const val ACTION_GET_AIRSIGMET: String = "flightintel.intent.wx.action.GET_AIRSIGMET"
         const val ACTION_GET_PROGCHART: String = "flightintel.intent.wx.action.GET_PROGCHART"
         const val ACTION_GET_ICING: String = "flightintel.intent.action.wx.GET_ICING"
+        const val ACTION_GET_WINDS_ALOFT: String = "flightintel.intent.action.wx.GET_WINDS_ALOFT"
         const val ACTION_GET_FA: String = "flightintel.intent.action.wx.GET_FA"
-        const val ACTION_GET_FB: String = "flightintel.intent.action.wx.GET_FB"
         const val ACTION_GET_GFA: String = "flightintel.intent.action.wx.GET_GFA"
     }
 }

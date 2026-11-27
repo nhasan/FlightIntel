@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2017-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,46 +18,89 @@
  */
 package com.nadmm.airports.wx
 
+import android.content.Context
 import android.content.Intent
-import android.text.format.DateUtils
+import android.location.Location
+import android.text.format.DateUtils.HOUR_IN_MILLIS
+import android.text.format.DateUtils.MINUTE_IN_MILLIS
+import androidx.core.content.IntentCompat
 import com.nadmm.airports.utils.UiUtils.showToast
+import java.util.Locale
 
-class WindsAloftService : NoaaService("fb", FB_CACHE_MAX_AGE) {
+/**
+ * Fetches winds aloft for a station from NOAA's GFS model through
+ * Open-Meteo, as the NWS no longer issues its FB forecasts, and builds the
+ * table with [WindsAloftBuilder].
+ */
+class WindsAloftService : NoaaService("windsaloft", CACHE_MAX_AGE) {
 
     override suspend fun onHandleIntent(intent: Intent?) {
-        intent?.let {
-            val action = intent.action
-
-            if (action == ACTION_GET_FB) {
-                fetchWindsAloftText(intent)
-            }
+        if (intent?.action == ACTION_GET_WINDS_ALOFT) {
+            getWindsAloft(intent)
         }
     }
 
-    private suspend fun fetchWindsAloftText(intent: Intent) {
-        val action = intent.action ?: return
-        val code = intent.getStringExtra(TEXT_CODE)
-        val type = intent.getStringExtra(TEXT_TYPE)
-        val filename = "F${type}_fbwind_low_${code}.txt"
-        val file = wxCache.getFile(filename)
-        if (!file.exists()) {
+    private suspend fun getWindsAloft(intent: Intent) {
+        val location = IntentCompat.getParcelableExtra(intent, LOCATION, Location::class.java) ?: return
+        val stationId = intent.getStringExtra(STATION_ID) ?: return
+        val elevationFt = intent.getIntExtra(ELEVATION_FT, 0)
+        val cachedFile = wxCache.getCachedFile(stationId)
+        // Also refetch once the first forecast's hour is over, so the first
+        // card is always the hour under way
+        val cached = if (cachedFile.exists()) wxCache.deserializeObject<WindsAloft>(stationId) else null
+        val firstHourOver = cached?.forecasts?.firstOrNull()
+            ?.let { it.timeMillis + HOUR_IN_MILLIS <= System.currentTimeMillis() } ?: false
+        if (intent.getBooleanExtra(FORCE_REFRESH, false) || firstHourOver) {
+            cachedFile.delete()
+        }
+
+        if (!cachedFile.exists()) {
+            val jsonFile = wxCache.createTempFile()
             try {
-                val query = "region=${code}&level=low&fcst=${type}"
-                fetchFromNoaa("/api/data/windtemp", query, file)
+                val query = String.format(Locale.US,
+                    "latitude=%.4f&longitude=%.4f&hourly=%s&wind_speed_unit=kn&forecast_hours=%d",
+                    location.latitude, location.longitude,
+                    WindsAloftBuilder.hourlyVariables(), FORECAST_HOURS)
+                if (fetch(OPEN_METEO_HOST, "/v1/gfs", query, jsonFile)) {
+                    val winds = WindsAloftBuilder.build(
+                        jsonFile.readText(), stationId, elevationFt, System.currentTimeMillis())
+                    if (winds.forecasts.isNotEmpty()) {
+                        wxCache.serializeObject(winds, stationId)
+                    }
+                }
             } catch (e: Exception) {
-                showToast(this, "Unable to fetch FB text: ${e.message}")
+                showToast(this, "Unable to fetch winds aloft: " + e.message)
+            } finally {
+                jsonFile.delete()
             }
         }
 
-        val result = Result(
-            action = action,
+        Events.post(Result(
+            action = ACTION_GET_WINDS_ALOFT,
             type = TYPE_TEXT,
-            result = if (file.exists()) file.absolutePath else ""
-        )
-        Events.post(result)
+            result = wxCache.deserializeObject<WindsAloft>(stationId) ?: WindsAloft(stationId)
+        ))
     }
 
     companion object {
-        private const val FB_CACHE_MAX_AGE = DateUtils.MINUTE_IN_MILLIS * 30
+        private const val OPEN_METEO_HOST = "api.open-meteo.com"
+        // The model runs every 6 hours, so this is fresh enough
+        private const val CACHE_MAX_AGE = 30 * MINUTE_IN_MILLIS
+        // Enough for the forecast 24 hours ahead
+        private const val FORECAST_HOURS = 26
+        private const val ELEVATION_FT = "ELEVATION_FT"
+
+        fun startService(
+            context: Context, stationId: String, location: Location,
+            elevationFt: Int, refresh: Boolean
+        ) {
+            context.startService(Intent(context, WindsAloftService::class.java).apply {
+                action = ACTION_GET_WINDS_ALOFT
+                putExtra(STATION_ID, stationId)
+                putExtra(LOCATION, location)
+                putExtra(ELEVATION_FT, elevationFt)
+                putExtra(FORCE_REFRESH, refresh)
+            })
+        }
     }
 }

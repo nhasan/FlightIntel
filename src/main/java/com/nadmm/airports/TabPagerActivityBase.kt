@@ -18,7 +18,10 @@
 package com.nadmm.airports
 
 import android.os.Bundle
+import android.view.View
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -79,6 +82,20 @@ abstract class TabPagerActivityBase : ActivityBase() {
 
     protected fun addTab(label: String, clss: Class<out Fragment>, args: Bundle?=null) {
         pagerAdapter.addTab(label, clss, args)
+        // Keep every page once visited, rather than only the two or so
+        // either side: a page dropped further away was rebuilt from scratch on
+        // return, reloading and fading in again. Pages not yet visited are
+        // still created only when shown.
+        (fragmentPager.getChildAt(0) as? RecyclerView)?.setItemViewCacheSize(pagerAdapter.itemCount)
+    }
+
+    /** Shows [header] above the tabs, outside the pages, so it stays put. */
+    protected fun setPagerHeader(header: View) {
+        findViewById<FrameLayout>(R.id.tab_pager_header).apply {
+            removeAllViews()
+            addView(header)
+            visibility = View.VISIBLE
+        }
     }
 
     private val currentFragment: FragmentBase?

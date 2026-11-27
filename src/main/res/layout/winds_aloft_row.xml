@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2026 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ -->
+<!-- One altitude of a winds aloft forecast, in columns that line up from
+     row to row: the same widths, right-aligned, with tabular digits -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="@dimen/item_padding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <TextView android:id="@+id/winds_altitude"
+            style="@style/TextSmall"
+            android:fontFeatureSettings="tnum"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/winds_wind"
+            style="@style/TextSmall"
+            android:fontFeatureSettings="tnum"
+            android:gravity="end"
+            android:layout_weight="1.3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    <TextView android:id="@+id/winds_temperature"
+            style="@style/TextSmall"
+            android:fontFeatureSettings="tnum"
+            android:gravity="end"
+            android:layout_weight="0.7"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+</LinearLayout>

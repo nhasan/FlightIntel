@@ -17,7 +17,10 @@ data class DofListDataModel(
     // when the cursor has them
     val latitude: Double? = null,
     val longitude: Double? = null,
-    val distanceNm: Float? = null
+    val distanceNm: Float? = null,
+    // How many obstacles the entry stands for, and whether they are lighted
+    val count: Int = 1,
+    val isLighted: Boolean = false
 ) {
     companion object {
         fun fromCursor(cursor: Cursor): DofListDataModel {
@@ -28,7 +31,8 @@ data class DofListDataModel(
             val mslHeight = cursor.getInt(cursor.getColumnIndexOrThrow(DOF.HEIGHT_MSL))
             val aglHeight = cursor.getInt(cursor.getColumnIndexOrThrow(DOF.HEIGHT_AGL))
             val markingType = decodeMarking(cursor.getString(cursor.getColumnIndexOrThrow(DOF.MARKING_TYPE)))
-            val lightingType = decodeLighting(cursor.getString(cursor.getColumnIndexOrThrow(DOF.LIGHTING_TYPE)))
+            val lightingCode = cursor.getString(cursor.getColumnIndexOrThrow(DOF.LIGHTING_TYPE))
+            val lightingType = decodeLighting(lightingCode)
             val location = buildString {
                 if (cursor.getColumnIndexOrThrow(LocationColumns.DISTANCE) >= 0
                     && cursor.getColumnIndexOrThrow(LocationColumns.BEARING) >= 0
@@ -59,7 +63,9 @@ data class DofListDataModel(
                 location,
                 latitude,
                 longitude,
-                distanceNm
+                distanceNm,
+                cursor.getInt(cursor.getColumnIndexOrThrow(DOF.COUNT)).coerceAtLeast(1),
+                isLighted(lightingCode)
             )
         }
 
@@ -112,6 +118,10 @@ data class DofListDataModel(
                 else -> "Unknown marking"
             }
         }
+
+        /** True for any lighting code other than not lighted or unknown. */
+        fun isLighted(code: String?): Boolean =
+            code != null && code in "RDHMSFCWL" && code.length == 1
 
         private fun decodeLighting(type: String?): String {
             return when (type) {

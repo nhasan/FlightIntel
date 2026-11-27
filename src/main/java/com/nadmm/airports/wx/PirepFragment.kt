@@ -51,6 +51,8 @@ import kotlinx.coroutines.withContext
 class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
     private var _binding: PirepDetailViewBinding? = null
     private val binding get() = _binding!!
+    // What is showing, so coming back to the tab does not redraw the same
+    private var shownFetchTime = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +70,7 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        shownFetchTime = 0L
         _binding = null
     }
 
@@ -79,7 +82,10 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
         val type = result.type
         if (NoaaService.TYPE_TEXT == type) {
             val pirep = getResultObject(result, Pirep::class.java)
-            showPirep(pirep)
+            if (pirep.fetchTime == 0L || pirep.fetchTime != shownFetchTime) {
+                shownFetchTime = pirep.fetchTime
+                showPirep(pirep)
+            }
             isRefreshing = false
         }
     }

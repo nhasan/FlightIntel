@@ -37,6 +37,12 @@ public final class DownloadActivity extends FragmentActivityBase {
     }
 
     @Override
+    protected boolean getShowsSearch() {
+        // Search has no place on the download screen
+        return false;
+    }
+
+    @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
         switch ( item.getItemId() ) {
         case android.R.id.home:

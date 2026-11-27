@@ -37,12 +37,6 @@ import kotlinx.coroutines.withContext
 class FavoriteWxFragment : RecyclerViewFragment() {
     private val mDelegate = WxDelegate(this)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(false)
-    }
-
     override fun onResume() {
         super.onResume()
 

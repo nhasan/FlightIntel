@@ -58,6 +58,12 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
     private var _binding: TafDetailViewBinding? = null
     private val binding get() = _binding!!
     private var lastTaf = Taf()
+    // The station's header, filled once per view: it does not change, and
+    // refilling it on each return to the tab made it blink
+    private var stationShown = false
+    // The station the TAF comes from, which may be a nearby one
+    private var tafStationId: String? = null
+    private var tafStationNote: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +86,9 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        stationShown = false
+        // The new view starts empty, so the next TAF must be drawn
+        lastTaf = Taf()
         _binding = null
     }
 
@@ -102,6 +111,10 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
     private fun fetchTaf(refresh: Boolean = false) {
         arguments?.let {
             val stationId = arguments?.getString(NoaaService.STATION_ID) ?: return
+            tafStationId?.takeIf { stationShown }?.let { tafStation ->
+                TafService.startService(requireActivity(), tafStation, refresh)
+                return
+            }
             viewLifecycleOwner.lifecycleScope.launch {
                 val result = withContext(Dispatchers.IO) {
                     doQuery(stationId)
@@ -116,7 +129,13 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         if (wxs?.moveToFirst() == true) {
             // We have a station with TAF, get the station id
             val stationId = wxs.getString(wxs.getColumnIndexOrThrow(Wxs.STATION_ID))
-            showWxTitle(binding.wxTitle, binding.wxSubtitle, result)
+            // The header above the tabs shows the selected station; say so
+            // when the TAF is from a nearby one instead
+            val name = wxs.getString(wxs.getColumnIndexOrThrow(Wxs.STATION_NAME))
+            tafStationNote = if (stationId != arguments?.getString(NoaaService.STATION_ID))
+                "From $stationId - $name, the nearest station with a TAF" else null
+            stationShown = true
+            tafStationId = stationId
             TafService.startService(requireActivity(), stationId, refresh)
         } else {
             // No station with TAF was found
@@ -238,7 +257,6 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
                 wxStatusLayout.visibility = View.GONE
                 statusMsg.visibility = View.VISIBLE
                 statusMsg.text = "No wx station with TAF was found in the vicinity of $stationId"
-                wxTitle.wxTitleLayout.visibility = View.GONE
             }
             isRefreshing = false
             setContentShown(true)
@@ -270,7 +288,8 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
                 wxDetailLayout.visibility = View.VISIBLE
             }
 
-            wxSubtitle.wxAge.text = TimeUtils.formatElapsedTime(taf.issueTime)
+            wxReportNote.text = listOfNotNull(tafStationNote,
+                "Issued ${TimeUtils.formatElapsedTime(taf.issueTime)}").joinToString("\n")
             // Raw Text
             wxRawTaf.text = taf.rawText?.replace("(FM|BECMG|TEMPO)".toRegex(), "\n    $1")
 

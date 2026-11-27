@@ -131,10 +131,14 @@ abstract class WxGraphicFragmentBase(
                 val view = Intent(activity, ImageViewActivity::class.java)
                 view.putExtra(ImageViewActivity.IMAGE_PATH, path)
                 view.putExtra(ImageViewActivity.IMAGE_TITLE, title.ifEmpty { activity?.title })
-                result.imageCode?.let { code ->
-                    wxGraphics[code]?.let { name ->
-                        view.putExtra(ImageViewActivity.IMAGE_SUBTITLE, name)
-                    }
+                // What was picked: the graphic, and its period where there is
+                // one to pick, such as "6,000 feet MSL · 6 Hour"
+                val subtitle = listOfNotNull(
+                    result.imageCode?.let { wxGraphics[it] },
+                    result.imageType?.let { wxTypes[it] }
+                ).joinToString(" · ")
+                if (subtitle.isNotEmpty()) {
+                    view.putExtra(ImageViewActivity.IMAGE_SUBTITLE, subtitle)
                 }
                 startActivity(view)
             }

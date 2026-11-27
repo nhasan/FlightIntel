@@ -20,4 +20,14 @@ class DofListDataModelTest {
         assertEquals("Meteorological Tower", DofListDataModel.obstacleLabel("MET", 1))
         assertEquals("Control Tower", DofListDataModel.obstacleLabel("CTRL TWR", 1))
     }
+
+    @Test
+    fun knowsWhichCodesAreLighted() {
+        for (code in listOf("R", "D", "H", "M", "S", "F", "C", "W", "L")) {
+            assertEquals(code, true, DofListDataModel.isLighted(code))
+        }
+        for (code in listOf("N", "U", "", "RD", null)) {
+            assertEquals(code.toString(), false, DofListDataModel.isLighted(code))
+        }
+    }
 }

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2026 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ -->
+<androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout android:id="@+id/main_content"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:paddingStart="@dimen/padding_left"
+            android:paddingEnd="@dimen/padding_right"
+            android:paddingBottom="@dimen/item_padding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!-- When the forecast was fetched, as METAR and TAF show their age -->
+            <TextView android:id="@+id/wx_report_note"
+                    style="@style/TextSmall.Light"
+                    android:paddingTop="@dimen/item_padding"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/winds_aloft_msg"
+                    style="@style/TextSmall"
+                    android:layout_marginTop="@dimen/section_margin"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            <!-- A label and a card for each forecast time -->
+            <LinearLayout android:id="@+id/winds_aloft_forecasts"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            <TextView android:id="@+id/winds_aloft_source"
+                    style="@style/TextSmall.Light"
+                    android:text="@string/winds_aloft_source"
+                    android:layout_marginTop="@dimen/section_margin"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
