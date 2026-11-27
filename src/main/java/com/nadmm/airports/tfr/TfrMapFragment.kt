@@ -29,6 +29,7 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.StaticLayout
 import android.text.TextPaint
+import android.text.format.DateUtils
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
 import android.util.DisplayMetrics
@@ -41,6 +42,8 @@ import androidx.core.os.BundleCompat
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.tfr.TfrList.Tfr
+import com.nadmm.airports.tfr.TfrList.TfrShape
+import com.nadmm.airports.utils.TimeUtils
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.BoundingBox
@@ -53,6 +56,7 @@ import org.osmdroid.views.overlay.Overlay
 import org.osmdroid.views.overlay.Polygon
 import org.osmdroid.views.overlay.ScaleBarOverlay
 import java.io.File
+import java.util.Locale
 import kotlin.math.ceil
 
 /** Draws the areas of a TFR on an OpenStreetMap map. */
@@ -114,11 +118,11 @@ class TfrMapFragment : FragmentBase() {
             })
         }
         // The NOTAM id and name stay at the top center; each area is labeled
-        // with its altitudes
+        // with its altitudes, and its times when they differ from the TFR's
         val metrics = resources.displayMetrics
         if (tfr != null) {
             for (label in TfrMapLabels.place(tfr.shapes)) {
-                val text = altitudeText(label) ?: continue
+                val text = areaText(label) { formatAreaTimes(it, tfr) } ?: continue
                 map.overlays.add(TfrLabelOverlay(
                     text, metrics, LABEL_COLOR, GeoPoint(label.latitude, label.longitude)))
             }
@@ -128,6 +132,7 @@ class TfrMapFragment : FragmentBase() {
         title?.let { map.overlays.add(it) }
         // Bottom right, as the attribution takes the bottom left
         map.overlays.add(ScaleBarOverlay(map).apply {
+            setUnitsOfMeasure(ScaleBarOverlay.UnitsOfMeasure.imperial)
             setAlignBottom(true)
             setAlignRight(true)
             val offset = (SCALE_BAR_OFFSET_DP * resources.displayMetrics.density).toInt()
@@ -148,6 +153,36 @@ class TfrMapFragment : FragmentBase() {
             }
         }
         setFragmentContentShown(true)
+    }
+
+    /**
+     * An area's effective dates when they differ from the TFR's, which the
+     * title already shows, plus its daily window if it has one.
+     */
+    private fun formatAreaTimes(shape: TfrShape, tfr: Tfr): List<String> {
+        val activity = activityBase
+        val active = shape.activeTime
+        val expire = shape.expireTime
+        val lines = ArrayList<String>()
+        if (TfrMapLabels.hasOwnDates(shape, tfr)) when {
+            active != null && expire != null ->
+                lines.add(TimeUtils.formatDateRange(activity, active, expire))
+            active != null -> lines.add("From " + TimeUtils.formatDateTimeYear(activity, active))
+            expire != null -> lines.add("Until " + TimeUtils.formatDateTimeYear(activity, expire))
+        }
+        TfrMapLabels.dailyWindow(shape)?.let { (start, end) ->
+            lines.add("Daily " + formatTimeOfDayRange(start, end))
+        }
+        return lines
+    }
+
+    @Suppress("deprecation")
+    private fun formatTimeOfDayRange(start: Long, end: Long): String {
+        val local = activityBase.prefShowLocalTime
+        var flags = DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_24HOUR
+        if (!local) flags = flags or DateUtils.FORMAT_UTC
+        val range = DateUtils.formatDateRange(requireContext(), start, end, flags)
+        return "$range ${if (local) TimeUtils.localTimeZoneName else "UTC"}"
     }
 
     override fun onResume() {
@@ -178,8 +213,8 @@ class TfrMapFragment : FragmentBase() {
         private const val LABEL_HALO_DP = 3f
         private const val SCALE_BAR_OFFSET_DP = 12f
         private const val TITLE_MARGIN_DP = 12f
-        // Name and altitudes, smaller than the NOTAM id
-        private const val SMALL_SCALE = 0.8f
+        // Name, type, altitudes and times, smaller than the NOTAM id
+        private const val SMALL_SCALE = 0.85f
 
         private fun titleText(tfr: Tfr, time: String): CharSequence? {
             val id = tfr.notamId.orEmpty().trim()
@@ -189,20 +224,47 @@ class TfrMapFragment : FragmentBase() {
             if (name.isNotEmpty() && !name.equals(id, ignoreCase = true)) {
                 text.appendLine(name, RelativeSizeSpan(SMALL_SCALE))
             }
+            val type = titleCase(tfr.type.orEmpty().trim())
+            if (type.isNotEmpty() && !type.equals(name, ignoreCase = true)) {
+                text.appendLine(type, RelativeSizeSpan(SMALL_SCALE))
+            }
             if (time.isNotEmpty()) text.appendLine(time, RelativeSizeSpan(SMALL_SCALE))
             return text.takeIf { it.isNotEmpty() }
         }
 
-        private fun altitudeText(label: TfrMapLabels.Label): CharSequence? {
+        /**
+         * The altitudes of the areas under a label, each followed by the times
+         * [times] gives for its areas. Areas sharing an outline are stacked, so
+         * the highest come first, and areas at the same altitudes but different
+         * times share the altitude line.
+         */
+        private fun areaText(
+            label: TfrMapLabels.Label, times: (TfrShape) -> List<String>
+        ): CharSequence? {
             val text = SpannableStringBuilder()
-            // Areas sharing an outline are stacked, so list the highest first
             label.shapes
-                .sortedByDescending { it.maxAltitude?.feet ?: it.minAltitude?.feet ?: 0 }
-                .mapNotNull { TfrMapLabels.formatAltitudeRange(it) }
-                .distinct()
-                .forEach { text.appendLine(it, RelativeSizeSpan(SMALL_SCALE)) }
+                .sortedWith(compareByDescending<TfrShape> {
+                    it.maxAltitude?.feet ?: it.minAltitude?.feet ?: 0
+                }.thenBy { it.activeTime ?: 0L })
+                .groupBy { TfrMapLabels.formatAltitudeRange(it) }
+                .forEach { (altitude, shapes) ->
+                    altitude?.let { text.appendLine(it, RelativeSizeSpan(SMALL_SCALE)) }
+                    shapes.flatMap(times).distinct().forEach {
+                        text.appendLine(it, RelativeSizeSpan(SMALL_SCALE))
+                    }
+                }
             return text.takeIf { it.isNotEmpty() }
         }
+
+        // Kept in capitals when title casing a TFR type
+        private val ACRONYMS = setOf("VIP", "UAS")
+
+        /** "SPACE OPERATIONS" as "Space Operations", keeping acronyms such as VIP. */
+        private fun titleCase(text: String): String =
+            text.split(Regex("(?<=[\\s/-])")).joinToString("") { word ->
+                if (word.trim(' ', '/', '-').uppercase() in ACRONYMS) word.uppercase()
+                else word.lowercase().replaceFirstChar { it.titlecase(Locale.US) }
+            }
 
         private fun SpannableStringBuilder.appendLine(line: String, vararg spans: Any) {
             if (isNotEmpty()) append("\n")

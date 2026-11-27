@@ -65,4 +65,16 @@ class TfrParserTest {
         assertNull(shapes[1].minAltitude)
         assertNull(shapes[1].maxAltitude)
     }
+
+    @Test
+    fun parsesShapeTimes() {
+        val shape = parse(
+            "<SHAPE active=\"2026-11-24T21:45:00Z\" expires=\"2026-11-24T23:15:00Z\" " +
+                "dailystart=\"bad\">38.1,-77.1 38.2,-77.0 38.0,-76.9</SHAPE>"
+        ).entries.single().shapes.single()
+        assertEquals(1795556700000L, shape.activeTime)
+        assertEquals(1795562100000L, shape.expireTime)
+        assertNull(shape.dailyStart)
+        assertNull(shape.dailyEnd)
+    }
 }

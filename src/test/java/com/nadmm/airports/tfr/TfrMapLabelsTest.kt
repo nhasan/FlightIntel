@@ -92,4 +92,30 @@ class TfrMapLabelsTest {
         assertFalse(TfrMapLabels.encloses(outer, apart))
         assertFalse(TfrMapLabels.encloses(outer, outer))
     }
+
+    @Test
+    fun dailyWindowOnlyForPartOfADay() {
+        val hour = 3_600_000L
+        fun shape(start: Long?, end: Long?) =
+            TfrShape(DoubleArray(0), DoubleArray(0), dailyStart = start, dailyEnd = end)
+        assertEquals(12 * hour to 23 * hour, TfrMapLabels.dailyWindow(shape(12 * hour, 23 * hour)))
+        // A window spanning days is continuous, not daily
+        assertNull(TfrMapLabels.dailyWindow(shape(0, 30 * 24 * hour)))
+        assertNull(TfrMapLabels.dailyWindow(shape(null, 23 * hour)))
+    }
+
+    @Test
+    fun areaHasOwnDatesOnlyWhenTheyDifferFromTheTfr() {
+        val tfr = TfrList.Tfr().apply {
+            activeTime = 1000
+            expireTime = 5000
+        }
+        fun shape(active: Long?, expire: Long?, dailyStart: Long? = null, dailyEnd: Long? = null) =
+            TfrShape(DoubleArray(0), DoubleArray(0), null, null, active, expire, dailyStart, dailyEnd)
+        assertFalse(TfrMapLabels.hasOwnDates(shape(null, null), tfr))
+        assertFalse(TfrMapLabels.hasOwnDates(shape(1000, 5000), tfr))
+        assertTrue(TfrMapLabels.hasOwnDates(shape(1000, 2000), tfr))
+        // A daily window alone does not make the dates differ
+        assertFalse(TfrMapLabels.hasOwnDates(shape(1000, 5000, 1000, 2000), tfr))
+    }
 }

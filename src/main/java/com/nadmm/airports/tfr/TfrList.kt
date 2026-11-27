@@ -44,13 +44,19 @@ class TfrList : Serializable {
 
     /**
      * One TFR area as a closed polygon in decimal degrees, with the area's own
-     * vertical limits when known.
+     * vertical limits and effective times when known. Times are in epoch
+     * millis; [dailyStart] and [dailyEnd] give the daily window on the first
+     * day for areas active only part of each day.
      */
     class TfrShape(
         val latitudes: DoubleArray,
         val longitudes: DoubleArray,
         val minAltitude: Altitude? = null,
-        val maxAltitude: Altitude? = null
+        val maxAltitude: Altitude? = null,
+        val activeTime: Long? = null,
+        val expireTime: Long? = null,
+        val dailyStart: Long? = null,
+        val dailyEnd: Long? = null
     ) : Serializable
 
     class Tfr : Serializable, Comparable<Tfr> {

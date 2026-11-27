@@ -120,6 +120,26 @@ object TfrMapLabels {
         return bestX to bestY
     }
 
+    private const val DAY_MILLIS = 24 * 60 * 60 * 1000L
+
+    /** The daily window of an area active only part of each day, else null. */
+    fun dailyWindow(shape: TfrShape): Pair<Long, Long>? {
+        val start = shape.dailyStart ?: return null
+        val end = shape.dailyEnd ?: return null
+        return (start to end).takeIf { end > start && end - start < DAY_MILLIS }
+    }
+
+    /**
+     * True when the area has effective dates of its own, other than those of
+     * the whole TFR, so its label needs to show them.
+     */
+    fun hasOwnDates(shape: TfrShape, tfr: TfrList.Tfr): Boolean {
+        if (shape.activeTime == null && shape.expireTime == null) return false
+        val tfrActive = tfr.activeTime.takeIf { it < Long.MAX_VALUE }
+        val tfrExpire = tfr.expireTime.takeIf { it < Long.MAX_VALUE }
+        return shape.activeTime != tfrActive || shape.expireTime != tfrExpire
+    }
+
     /** The vertical limits of an area, such as "SFC–17,999 ft MSL", or null if unknown. */
     fun formatAltitudeRange(shape: TfrShape): String? {
         var lower = shape.minAltitude?.let { formatAltitude(it, false) }

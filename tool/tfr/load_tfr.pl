@@ -78,6 +78,9 @@ my $avx_lat;
 my $avx_lon;
 # Vertical limits of the current area group, by element name
 my %area_alt;
+# Effective times of the current area group from its first ScheduleGroup
+my %area_time;
+my $area_schedules;
 
 my $reTrim = qr/^\s+|\s+$/;
 
@@ -166,6 +169,8 @@ sub handle_start() {
     elsif ($elem eq "TFRAreaGroup") {
         $TFRAreaGroup = 1;
         %area_alt = ();
+        %area_time = ();
+        $area_schedules = 0;
     }
     elsif ($elem eq "TfrNot") {
         @valDistVerLower = ();
@@ -196,6 +201,13 @@ sub handle_end() {
     if ($TFRAreaGroup and $elem =~ /^(?:val|uom|code)DistVer(?:Lower|Upper)$/) {
         $area_alt{$elem} = $text;
     }
+    if ($TFRAreaGroup and @elem_path and $elem_path[-1] eq "ScheduleGroup"
+            and $area_schedules == 0) {
+        $area_time{$elem} = $text =~ s/$reTrim//gr;
+    }
+    elsif ($TFRAreaGroup and $elem eq "ScheduleGroup") {
+        $area_schedules++;
+    }
 
     if ($merged_vertex and $elem eq "geoLat") {
         $avx_lat = parse_coord($text);
@@ -215,6 +227,18 @@ sub handle_end() {
             my $max = area_alt("Upper");
             $node->setAttribute("minalt", $min) if defined $min;
             $node->setAttribute("maxalt", $max) if defined $max;
+            # The area's own effective times. With isTimeSeparate, startTime
+            # and endTime give the daily window on the first day.
+            my %attrs = (active => "dateEffective", expires => "dateExpire");
+            if (($area_time{isTimeSeparate} // "") eq "TRUE") {
+                $attrs{dailystart} = "startTime";
+                $attrs{dailyend} = "endTime";
+            }
+            foreach my $attr (sort keys %attrs) {
+                my $value = $area_time{$attrs{$attr}};
+                $node->setAttribute($attr, "${value}Z")
+                    if defined $value and $value =~ /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d$/;
+            }
             $node->appendTextNode(join(" ", @shape_points));
             $tfr_elem->appendChild($node);
         }

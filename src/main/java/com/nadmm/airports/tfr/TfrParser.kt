@@ -54,6 +54,7 @@ class TfrParser {
         private val text: StringBuilder
         private var shapeMinAlt: TfrList.Altitude? = null
         private var shapeMaxAlt: TfrList.Altitude? = null
+        private var shapeTimes: List<Long?> = emptyList()
         private val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.US)
         override fun characters(ch: CharArray, start: Int, length: Int) {
             text.append(ch, start, length)
@@ -70,6 +71,9 @@ class TfrParser {
             } else if (qName == "SHAPE") {
                 shapeMinAlt = attributes.getValue("minalt")?.let(::parseAltitude)
                 shapeMaxAlt = attributes.getValue("maxalt")?.let(::parseAltitude)
+                shapeTimes = listOf("active", "expires", "dailystart", "dailyend").map { name ->
+                    attributes.getValue(name)?.let(::parseDateTime)?.takeIf { it < Long.MAX_VALUE }
+                }
             }
             text.setLength(0)
         }
@@ -132,7 +136,11 @@ class TfrParser {
                 points.map { it.first }.toDoubleArray(),
                 points.map { it.second }.toDoubleArray(),
                 shapeMinAlt,
-                shapeMaxAlt
+                shapeMaxAlt,
+                shapeTimes.getOrNull(0),
+                shapeTimes.getOrNull(1),
+                shapeTimes.getOrNull(2),
+                shapeTimes.getOrNull(3)
             )
         }
 
