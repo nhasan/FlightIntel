@@ -51,7 +51,6 @@ import com.nadmm.airports.utils.WxUtils.getDensityAltitude
 import com.nadmm.airports.utils.WxUtils.getPressureAltitude
 import com.nadmm.airports.utils.WxUtils.getRelativeHumidity
 import com.nadmm.airports.utils.WxUtils.getWindBarbDrawable
-import com.nadmm.airports.utils.WxUtils.setFlightCategoryDrawable
 import com.nadmm.airports.utils.WxUtils.showColorizedDrawable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,6 +63,9 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
     private var _binding: MetarDetailViewBinding? = null
     private val binding get() = _binding!!
     private var lastMetar = Metar()
+    // The station's header and remarks, filled once per view: they do not
+    // change, and refilling them on each return to the tab made it blink
+    private var stationShown = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -81,6 +83,9 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        stationShown = false
+        // The new view starts empty, so the next METAR must be drawn
+        lastMetar = Metar()
         _binding = null
     }
 
@@ -103,6 +108,10 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
     private fun fetchMetar(refresh: Boolean = false) {
         arguments?.let {
             val stationId = it.getString(NoaaService.STATION_ID) ?: return
+            if (stationShown) {
+                MetarService.startService(requireActivity(), stationId, refresh)
+                return
+            }
             viewLifecycleOwner.lifecycleScope.launch {
                 val result = withContext(Dispatchers.IO) {
                     doQuery(stationId)
@@ -120,8 +129,6 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
                 longitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES))
             }
 
-            showWxTitle(binding.wxTitle, binding.wxSubtitle, result)
-
             // Remarks
             binding.wxRemarksLayout.removeAllViews()
             result[2]?.let { rmk ->
@@ -133,6 +140,7 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
                 }
             }
 
+            stationShown = true
             val stationId = arguments?.getString(NoaaService.STATION_ID) ?: return
             MetarService.startService(requireActivity(), stationId, refresh)
         } else {
@@ -222,8 +230,9 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
                 wxStatusLayout.visibility = View.GONE
                 wxDetailLayout.visibility = View.VISIBLE
             }
-            setFlightCategoryDrawable(wxTitle.wxStationInfo, metar.flightCategory)
-            wxSubtitle.wxAge.text = TimeUtils.formatElapsedTime(metar.observationTime)
+            // The station header above the tabs shows the flight category
+            (activity as? WxDetailActivity)?.showFlightCategory(metar.flightCategory)
+            wxReportNote.text = "Observed ${TimeUtils.formatElapsedTime(metar.observationTime)}"
             wxRawMetar.text = metar.rawText
 
             // Winds

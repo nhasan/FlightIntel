@@ -28,10 +28,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-        <include android:id="@+id/wx_title"
-            layout="@layout/wx_title_layout" />
-        <include android:id="@+id/wx_subtitle"
-            layout="@layout/wx_subtitle_layout" />
         <TextView android:id="@+id/status_msg"
                 style="@style/TextLabel"
                 android:gravity="center"
@@ -53,6 +49,12 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+            <!-- When the report was made, and for TAF which station it is from -->
+            <TextView android:id="@+id/wx_report_note"
+                    style="@style/TextSmall.Light"
+                    android:paddingBottom="@dimen/item_padding"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             <TextView android:id="@+id/wx_raw_taf_label"
                     android:text="@string/raw_text"
                     style="@style/TextLabel"

@@ -50,6 +50,12 @@ import kotlin.math.roundToInt
 class WindsAloftFragment : WxFragmentBase(NoaaService.ACTION_GET_WINDS_ALOFT) {
     private var _binding: WindsAloftViewBinding? = null
     private val binding get() = _binding!!
+    // What is showing, so coming back to the tab does not redraw the same
+    private var shownFetchTime = 0L
+    // The station's header and position, found once per view
+    private var station: StationInfo? = null
+
+    private class StationInfo(val location: Location, val elevationFt: Int)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +72,8 @@ class WindsAloftFragment : WxFragmentBase(NoaaService.ACTION_GET_WINDS_ALOFT) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        shownFetchTime = 0L
+        station = null
         _binding = null
     }
 
@@ -75,30 +83,39 @@ class WindsAloftFragment : WxFragmentBase(NoaaService.ACTION_GET_WINDS_ALOFT) {
 
     override fun processResult(result: NoaaService.Result) {
         if (result.type == NoaaService.TYPE_TEXT) {
-            showWindsAloft(getResultObject(result, WindsAloft::class.java))
+            val winds = getResultObject(result, WindsAloft::class.java)
+            if (winds.fetchTime == 0L || winds.fetchTime != shownFetchTime) {
+                shownFetchTime = winds.fetchTime
+                showWindsAloft(winds)
+            }
             isRefreshing = false
         }
     }
 
     private fun fetchWindsAloft(refresh: Boolean = false) {
         val stationId = arguments?.getString(NoaaService.STATION_ID) ?: return
+        station?.let {
+            WindsAloftService.startService(requireActivity(), stationId, it.location,
+                it.elevationFt, refresh)
+            return
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             val cursors = withContext(Dispatchers.IO) { queryStation(stationId) }
-            val station = cursors[0]
-            if (station == null || !station.moveToFirst()) {
+            val wxs = cursors[0]
+            if (wxs == null || !wxs.moveToFirst()) {
                 showMessage("Unable to get station info for $stationId")
                 return@launch
             }
-            // The station above the forecasts, as on the METAR and TAF tabs
-            showWxTitle(binding.wxTitle, binding.wxSubtitle, cursors)
-            station.moveToFirst()
+            wxs.moveToFirst()
             val location = Location("").apply {
-                latitude = station.getDouble(station.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES))
-                longitude = station.getDouble(station.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES))
+                latitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LATITUDE_DEGREES))
+                longitude = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_LONGITUDE_DEGREES))
             }
-            val elevationM = station.getDouble(station.getColumnIndexOrThrow(Wxs.STATION_ELEVATOIN_METER))
-            WindsAloftService.startService(requireActivity(), stationId, location,
-                (elevationM * FEET_PER_METER).roundToInt(), refresh)
+            val elevationM = wxs.getDouble(wxs.getColumnIndexOrThrow(Wxs.STATION_ELEVATOIN_METER))
+            val info = StationInfo(location, (elevationM * FEET_PER_METER).roundToInt())
+            this@WindsAloftFragment.station = info
+            WindsAloftService.startService(requireActivity(), stationId, info.location,
+                info.elevationFt, refresh)
         }
     }
 
@@ -123,6 +140,7 @@ class WindsAloftFragment : WxFragmentBase(NoaaService.ACTION_GET_WINDS_ALOFT) {
 
     private fun showMessage(message: String) {
         binding.windsAloftForecasts.removeAllViews()
+        binding.wxReportNote.visibility = View.GONE
         binding.windsAloftMsg.text = message
         binding.windsAloftMsg.visibility = View.VISIBLE
         setFragmentContentShown(true)
@@ -140,8 +158,7 @@ class WindsAloftFragment : WxFragmentBase(NoaaService.ACTION_GET_WINDS_ALOFT) {
         for (forecast in winds.forecasts) {
             val label = inflate<TextView>(R.layout.tfr_detail_label)
             val time = TimeUtils.formatDateTime(activityBase, forecast.timeMillis)
-            label.text = if (forecast.hoursAhead == 0) "Now, $time"
-                else "${forecast.hoursAhead} hours, $time"
+            label.text = "${whenLabel(forecast.timeMillis)}, $time"
             layout.addView(label)
             val card = inflate<LinearLayout>(R.layout.tfr_detail_card)
             layout.addView(card)
@@ -151,9 +168,25 @@ class WindsAloftFragment : WxFragmentBase(NoaaService.ACTION_GET_WINDS_ALOFT) {
                     formatWind(row), formatTemperature(row))
             }
         }
-        binding.wxFetchTime.text = "Fetched on ${TimeUtils.formatDateTime(activityBase, winds.fetchTime)}"
-        binding.wxFetchTime.visibility = View.VISIBLE
+        binding.wxReportNote.text = "Fetched ${TimeUtils.formatElapsedTime(winds.fetchTime)}"
+        binding.wxReportNote.visibility = View.VISIBLE
         setFragmentContentShown(true)
+    }
+
+    /**
+     * "Now" for the forecast hour under way, else how far ahead it is, from
+     * the time shown rather than when the forecast was fetched.
+     */
+    private fun whenLabel(timeMillis: Long): String {
+        val ahead = timeMillis - System.currentTimeMillis()
+        return when {
+            ahead <= -HOUR_MILLIS -> "Earlier"
+            ahead <= 0 -> "Now"
+            else -> {
+                val hours = (ahead + HOUR_MILLIS - 1) / HOUR_MILLIS
+                if (hours == 1L) "In 1 hour" else "In $hours hours"
+            }
+        }
     }
 
     /** A row of the three columns; the heading row in the lighter style. */
@@ -192,5 +225,6 @@ class WindsAloftFragment : WxFragmentBase(NoaaService.ACTION_GET_WINDS_ALOFT) {
 
     companion object {
         private const val FEET_PER_METER = 3.28084
+        private const val HOUR_MILLIS = 60 * 60 * 1000L
     }
 }

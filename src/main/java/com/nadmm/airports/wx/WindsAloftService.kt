@@ -21,6 +21,7 @@ package com.nadmm.airports.wx
 import android.content.Context
 import android.content.Intent
 import android.location.Location
+import android.text.format.DateUtils.HOUR_IN_MILLIS
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import androidx.core.content.IntentCompat
 import com.nadmm.airports.utils.UiUtils.showToast
@@ -44,7 +45,12 @@ class WindsAloftService : NoaaService("windsaloft", CACHE_MAX_AGE) {
         val stationId = intent.getStringExtra(STATION_ID) ?: return
         val elevationFt = intent.getIntExtra(ELEVATION_FT, 0)
         val cachedFile = wxCache.getCachedFile(stationId)
-        if (intent.getBooleanExtra(FORCE_REFRESH, false)) {
+        // Also refetch once the first forecast's hour is over, so the first
+        // card is always the hour under way
+        val cached = if (cachedFile.exists()) wxCache.deserializeObject<WindsAloft>(stationId) else null
+        val firstHourOver = cached?.forecasts?.firstOrNull()
+            ?.let { it.timeMillis + HOUR_IN_MILLIS <= System.currentTimeMillis() } ?: false
+        if (intent.getBooleanExtra(FORCE_REFRESH, false) || firstHourOver) {
             cachedFile.delete()
         }
 

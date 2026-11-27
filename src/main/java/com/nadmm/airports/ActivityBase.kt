@@ -535,6 +535,10 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         val content = view.findViewById<View>(R.id.INTERNAL_FRAGMENT_CONTAINER_ID)
         content ?: return
 
+        // Already in that state: fading again would only flash the content
+        val showing = content.visibility == View.VISIBLE && progress.visibility == View.GONE
+        if (shown == showing) return
+
         if (shown) {
             if (animation) {
                 progress.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out))
