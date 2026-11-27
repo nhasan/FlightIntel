@@ -18,8 +18,6 @@
  */
 package com.nadmm.airports.dof
 
-import android.graphics.Color
-import android.graphics.DashPathEffect
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -54,7 +52,6 @@ class NearbyObstaclesMapFragment : FragmentBase() {
     private var hintDismissed = false
     private var obstacleOverlay: ObstacleOverlay? = null
     private var searchArea: Polygon? = null
-    private var nearArea: Polygon? = null
     // Zoomed to the search circle once; later updates keep the user's view
     private var zoomed = false
 
@@ -87,20 +84,10 @@ class NearbyObstaclesMapFragment : FragmentBase() {
             fillPaint.color = SEARCH_AREA_FILL
             infoWindow = null
         }
-        // Dashed: where obstacles 100 ft AGL or taller are highlighted
-        nearArea = Polygon(map).apply {
-            outlinePaint.color = SEARCH_AREA_COLOR
-            outlinePaint.strokeWidth = NEAR_AREA_WIDTH_DP * density
-            outlinePaint.pathEffect = DashPathEffect(
-                floatArrayOf(NEAR_AREA_DASH_DP * density, NEAR_AREA_DASH_DP * density), 0f)
-            fillPaint.color = Color.TRANSPARENT
-            infoWindow = null
-        }
         obstacleOverlay = ObstacleOverlay(requireContext()) { showDetails(it) }.apply {
             centerLabel = arguments?.getString(NearbyObstaclesActivity.EXTRA_PLACE_NAME)
         }
         map.overlays.add(searchArea)
-        map.overlays.add(nearArea)
         // After the search area, so taps reach the obstacles first
         map.overlays.add(obstacleOverlay)
         OsmMaps.addScaleAndAttribution(map)
@@ -121,12 +108,6 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         val radiusMeters = nearby.radiusNm * GeoUtils.METERS_PER_NAUTICAL_MILE.toDouble()
         val circle = Polygon.pointsAsCircle(center, radiusMeters)
         searchArea?.points = circle
-        nearArea?.apply {
-            points = Polygon.pointsAsCircle(center,
-                ObstacleOverlay.NEAR_RADIUS_NM * GeoUtils.METERS_PER_NAUTICAL_MILE.toDouble())
-            // Only when it explains a highlighted obstacle inside it
-            isVisible = nearby.obstacles.any { ObstacleOverlay.isHighlightedNear(it) }
-        }
         obstacleOverlay?.center = center
         obstacleOverlay?.setObstacles(nearby.obstacles)
 
@@ -203,8 +184,6 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         private const val SEARCH_AREA_COLOR = 0xCC1E88E5.toInt()
         private const val SEARCH_AREA_FILL = 0x141E88E5
         private const val SEARCH_AREA_WIDTH_DP = 2f
-        private const val NEAR_AREA_WIDTH_DP = 1.5f
-        private const val NEAR_AREA_DASH_DP = 6f
         private const val ZOOM_PADDING_DP = 16f
         // 20% translucent, so the map shows through the details panel
         private const val DETAILS_BACKGROUND_ALPHA = 204

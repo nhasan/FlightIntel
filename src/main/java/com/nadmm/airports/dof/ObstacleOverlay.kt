@@ -19,7 +19,6 @@
 package com.nadmm.airports.dof
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -28,20 +27,18 @@ import android.graphics.Point
 import android.graphics.Typeface
 import android.util.TypedValue
 import android.view.MotionEvent
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.createBitmap
-import com.nadmm.airports.R
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.Projection
 import org.osmdroid.views.overlay.Overlay
 import java.util.Locale
 import kotlin.math.hypot
-import kotlin.math.roundToInt
 
 /**
- * Draws obstacles, towers with a tower icon and others as triangles, larger
- * for those 1,000 ft AGL or taller, and the search position as a dot. The
+ * Draws obstacles with the FAA chart's obstacle symbol, a narrow inverted V
+ * with a dot at its base on the obstacle: taller for those 1,000 ft AGL or
+ * more, with rays at the tip when lighted, and doubled for an entry that
+ * stands for a group. The search position shows as a dot. The
  * ten tallest over 100 ft AGL, and any 100 ft AGL or taller within 1 NM of
  * the search position, stand out in red with their heights, MSL with AGL in
  * parentheses as on a sectional chart. A name for the search position, such
@@ -53,7 +50,6 @@ class ObstacleOverlay(
     private val onSelect: (DofListDataModel?) -> Unit
 ) : Overlay() {
     private class Item(val obstacle: DofListDataModel, val point: GeoPoint) {
-        val isTower = obstacle.obstacleType.contains("Tower")
         val isTall = obstacle.aglHeight >= TALL_AGL_FT
     }
 
@@ -74,6 +70,17 @@ class ObstacleOverlay(
         strokeJoin = Paint.Join.ROUND
         color = Color.WHITE
     }
+    // The symbol's lines, over a wider white halo so they stand out on the map
+    private val symbolLine = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = SYMBOL_LINE_DP * density
+        strokeJoin = Paint.Join.ROUND
+        strokeCap = Paint.Cap.ROUND
+    }
+    private val symbolHalo = Paint(symbolLine).apply {
+        strokeWidth = (SYMBOL_LINE_DP + 2 * SYMBOL_HALO_DP) * density
+        color = Color.WHITE
+    }
     private val labelText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         textSize = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_SP, LABEL_SP, context.resources.displayMetrics)
@@ -88,9 +95,6 @@ class ObstacleOverlay(
     }
     private val centerText = Paint(labelText).apply { color = POSITION_LABEL_COLOR }
     private val centerHalo = Paint(labelHalo)
-    // Tower icons drawn once per color and size, as drawing the vector for
-    // each of a thousand obstacles on every frame would be slow
-    private val towerIcons = HashMap<Pair<Int, Int>, Bitmap>()
 
     /** Replaces the obstacles, keeping the selection if it is still among them. */
     fun setObstacles(obstacles: List<DofListDataModel>) {
@@ -141,47 +145,53 @@ class ObstacleOverlay(
         projection.toPixels(item.point, screen)
         val x = screen.x.toFloat()
         val y = screen.y.toFloat()
-        val half = (if (item.isTall) TALL_DP else SIZE_DP) * density * scale
-        if (item.isTower) {
-            val icon = towerIcon(color, (half * TOWER_ICON_SCALE * 2).roundToInt())
-            canvas.drawBitmap(icon, x - icon.width / 2f, y - icon.height / 2f, null)
-            return
-        }
+        val height = (if (item.isTall) TALL_HEIGHT_DP else HEIGHT_DP) * density * scale
+        val half = height * WIDTH_RATIO
         path.reset()
-        path.moveTo(x, y - half)
-        path.lineTo(x + half, y + half * 0.8f)
-        path.lineTo(x - half, y + half * 0.8f)
-        path.close()
-        fill.color = color
-        canvas.drawPath(path, fill)
-        canvas.drawPath(path, outline)
+        // A group shows as two symbols side by side, as on the chart
+        val offsets = if (item.obstacle.count > 1) listOf(-half * 0.9f, half * 0.9f) else listOf(0f)
+        for (dx in offsets) {
+            val cx = x + dx
+            path.moveTo(cx - half, y)
+            path.lineTo(cx, y - height)
+            path.lineTo(cx + half, y)
+            if (item.obstacle.isLighted) {
+                // Rays from the tip: up, and up to either side
+                val tipY = y - height
+                val gap = RAY_GAP_DP * density * scale
+                val ray = RAY_DP * density * scale
+                path.moveTo(cx, tipY - gap)
+                path.lineTo(cx, tipY - gap - ray)
+                path.moveTo(cx - gap, tipY - gap * 0.6f)
+                path.lineTo(cx - gap - ray * 0.8f, tipY - gap * 0.6f - ray * 0.6f)
+                path.moveTo(cx + gap, tipY - gap * 0.6f)
+                path.lineTo(cx + gap + ray * 0.8f, tipY - gap * 0.6f - ray * 0.6f)
+            }
+        }
+        canvas.drawPath(path, symbolHalo)
+        symbolLine.color = color
+        canvas.drawPath(path, symbolLine)
+        // The dot at the base, on the obstacle itself
+        val dot = DOT_DP * density * scale
+        for (dx in offsets) {
+            fill.color = Color.WHITE
+            canvas.drawCircle(x + dx, y, dot + SYMBOL_HALO_DP * density, fill)
+            fill.color = color
+            canvas.drawCircle(x + dx, y, dot, fill)
+        }
     }
 
-    /** MSL with AGL in parentheses, to the right of the obstacle. */
+    /** MSL with AGL in parentheses, to the right of the symbol, at its middle. */
     private fun drawHeightLabel(canvas: Canvas, projection: Projection, item: Item) {
         projection.toPixels(item.point, screen)
         val text = String.format(Locale.US, "%,d' (%,d')",
             item.obstacle.mslHeight, item.obstacle.aglHeight)
-        val x = screen.x + (TALL_DP * HIGHLIGHT_SCALE * TOWER_ICON_SCALE + LABEL_GAP_DP) * density
-        val y = screen.y - (labelText.ascent() + labelText.descent()) / 2
+        val height = (if (item.isTall) TALL_HEIGHT_DP else HEIGHT_DP) * density * HIGHLIGHT_SCALE
+        val groupWidth = if (item.obstacle.count > 1) height * WIDTH_RATIO * 0.9f else 0f
+        val x = screen.x + height * WIDTH_RATIO + groupWidth + LABEL_GAP_DP * density
+        val y = screen.y - height / 2 - (labelText.ascent() + labelText.descent()) / 2
         canvas.drawText(text, x, y, labelHalo)
         canvas.drawText(text, x, y, labelText)
-    }
-
-    /** The tower icon in [color] on a white disc, [size] pixels across. */
-    private fun towerIcon(color: Int, size: Int): Bitmap = towerIcons.getOrPut(color to size) {
-        val bitmap = createBitmap(size, size)
-        val canvas = Canvas(bitmap)
-        val r = size / 2f
-        fill.color = Color.WHITE
-        canvas.drawCircle(r, r, r, fill)
-        AppCompatResources.getDrawable(context, R.drawable.ic_outline_cell_tower_24)?.mutate()?.let {
-            it.setTint(color)
-            val inset = (size * ICON_INSET).roundToInt()
-            it.setBounds(inset, inset, size - inset, size - inset)
-            it.draw(canvas)
-        }
-        bitmap
     }
 
     override fun onSingleTapConfirmed(e: MotionEvent, mapView: MapView): Boolean {
@@ -190,7 +200,9 @@ class ObstacleOverlay(
         var nearestDistance = TAP_SLOP_DP * density
         for (item in items) {
             projection.toPixels(item.point, screen)
-            val d = hypot(screen.x - e.x, screen.y - e.y)
+            // The middle of the symbol, which stands above the obstacle
+            val middle = screen.y - (if (item.isTall) TALL_HEIGHT_DP else HEIGHT_DP) * density / 2
+            val d = hypot(screen.x - e.x, middle - e.y)
             if (d <= nearestDistance) {
                 nearest = item
                 nearestDistance = d
@@ -214,21 +226,25 @@ class ObstacleOverlay(
         private const val TALLEST_COUNT = 10
         private const val TALLEST_MIN_AGL_FT = 100
         // So do those close in, where they matter most near an airport
-        const val NEAR_RADIUS_NM = 1f
+        private const val NEAR_RADIUS_NM = 1f
         private const val NEAR_MIN_AGL_FT = 100
 
         /** True for an obstacle highlighted for being tall and close in. */
-        fun isHighlightedNear(obstacle: DofListDataModel) =
+        private fun isHighlightedNear(obstacle: DofListDataModel) =
             obstacle.aglHeight >= NEAR_MIN_AGL_FT
                     && (obstacle.distanceNm ?: Float.MAX_VALUE) <= NEAR_RADIUS_NM
         private const val TALL_AGL_FT = 1000
-        private const val SIZE_DP = 6f
-        private const val TALL_DP = 9f
-        private const val SELECTED_SCALE = 1.4f
-        private const val HIGHLIGHT_SCALE = 1.5f
-        // Tower icons are a little larger than triangles to read as icons
-        private const val TOWER_ICON_SCALE = 1.4f
-        private const val ICON_INSET = 0.12f
+        // The symbol: height, width as a share of it, and its parts
+        private const val HEIGHT_DP = 14f
+        private const val TALL_HEIGHT_DP = 20f
+        private const val WIDTH_RATIO = 0.3f
+        private const val SYMBOL_LINE_DP = 2f
+        private const val SYMBOL_HALO_DP = 1.5f
+        private const val DOT_DP = 2f
+        private const val RAY_DP = 4f
+        private const val RAY_GAP_DP = 2.5f
+        private const val SELECTED_SCALE = 1.3f
+        private const val HIGHLIGHT_SCALE = 1.3f
         private const val OUTLINE_DP = 1.5f
         private const val POSITION_DP = 6f
         private const val TAP_SLOP_DP = 24f
