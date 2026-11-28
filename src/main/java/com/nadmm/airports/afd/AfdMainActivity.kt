@@ -63,4 +63,6 @@ class AfdMainActivity : TabPagerActivityBase() {
     }
 
     override val selfNavDrawerItem = R.id.navdrawer_afd
+
+    override val showsSearch = true
 }

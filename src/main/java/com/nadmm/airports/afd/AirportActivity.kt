@@ -31,4 +31,5 @@ class AirportActivity : FragmentActivityBase() {
         addFragment(AirportDetailsFragment::class.java, intent.extras)
     }
 
+    override val showsSearch = true
 }

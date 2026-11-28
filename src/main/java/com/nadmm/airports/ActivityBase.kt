@@ -146,8 +146,11 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     protected open val selfNavDrawerItem: Int = NAVDRAWER_ITEM_INVALID
 
-    /** False for screens where search has no place, such as Downloads. */
-    protected open val showsSearch: Boolean = true
+    /**
+     * Whether the toolbar offers search. Search finds airports, so only the
+     * airport (A/FD) screens offer it.
+     */
+    protected open val showsSearch: Boolean = false
 
     var isRefreshing: Boolean
         get() = mSwipeRefreshLayout?.isRefreshing ?: false

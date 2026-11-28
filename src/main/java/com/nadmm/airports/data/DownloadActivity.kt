@@ -31,9 +31,6 @@ class DownloadActivity : FragmentActivityBase() {
         addFragment(DownloadFragment::class.java, intent.extras)
     }
 
-    // Search has no place on the download screen
-    override val showsSearch: Boolean = false
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             startActivity(Intent(this, AfdMainActivity::class.java))

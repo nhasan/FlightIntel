@@ -104,4 +104,6 @@ class SearchActivity : FragmentActivityBase() {
             }
         }
     }
+
+    override val showsSearch = true
 }
