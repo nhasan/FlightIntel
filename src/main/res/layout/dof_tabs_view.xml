@@ -19,13 +19,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  -->
-<!-- The Obstacles screen: its Map and List tabs, under the toolbar as on the
-     app's other tabbed screens -->
+<!-- The Obstacles screen: its filters, and its Map and List tabs -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <!-- Filters for both tabs, by height, lighting and search radius.
+         The chips share the row's width, long labels shortened, so each
+         chip's icon stays on screen. -->
+    <FrameLayout
+        android:id="@+id/dof_filters"
+        android:paddingStart="@dimen/item_padding"
+        android:paddingEnd="@dimen/item_padding"
+        android:paddingTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/dof_filter_chips"
+            app:singleLine="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dof_filter_height"
+                style="@style/FilterBarChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dof_filter_lighting"
+                style="@style/FilterBarChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dof_filter_radius"
+                style="@style/FilterBarChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.chip.ChipGroup>
+    </FrameLayout>
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/dof_tabs"
         app:tabMode="scrollable"

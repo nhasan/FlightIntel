@@ -24,11 +24,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/** The obstacles found near a location, within [radiusNm]. */
+/**
+ * The obstacles found near a location, within [radiusNm], that the filters
+ * let through, out of [total] found.
+ */
 class NearbyObstacles(
     val location: Location,
     val radiusNm: Int,
-    val obstacles: List<DofListDataModel>
+    val obstacles: List<DofListDataModel>,
+    val total: Int = obstacles.size
 )
 
 /**

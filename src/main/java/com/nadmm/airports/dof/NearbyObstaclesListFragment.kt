@@ -46,6 +46,7 @@ class NearbyObstaclesListFragment : RecyclerViewFragment() {
                         setEmptyText(when {
                             message != null -> message
                             nearby == null -> WAITING_TEXT
+                            nearby.total > 0 -> "No obstacles match the filters"
                             else -> "No obstacles within ${nearby.radiusNm} NM"
                         })
                         setListShown(obstacles.isNotEmpty())

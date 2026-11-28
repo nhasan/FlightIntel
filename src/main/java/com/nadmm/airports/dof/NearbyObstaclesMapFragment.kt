@@ -58,8 +58,9 @@ class NearbyObstaclesMapFragment : FragmentBase() {
     private var hintTimeout: Job? = null
     private var obstacleOverlay: ObstacleOverlay? = null
     private var searchArea: Polygon? = null
-    // Zoomed to the search circle once; later updates keep the user's view
-    private var zoomed = false
+    // Zoomed to the search circle for this radius; later updates at the same
+    // radius keep the user's view, and a new radius zooms to its circle
+    private var zoomedRadius = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -128,7 +129,8 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         map.visibility = View.VISIBLE
         status?.apply {
             visibility = if (nearby.obstacles.isEmpty()) View.VISIBLE else View.GONE
-            text = "No obstacles within ${nearby.radiusNm} NM"
+            text = if (nearby.total > 0) "No obstacles match the filters"
+                else "No obstacles within ${nearby.radiusNm} NM"
             // Over the map now, so at the top, clear of the search circle
             updateLayoutParams<FrameLayout.LayoutParams> {
                 gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
@@ -138,8 +140,8 @@ class NearbyObstaclesMapFragment : FragmentBase() {
             if (nearby.obstacles.isNotEmpty() && !hintDismissed) View.VISIBLE else View.GONE
         startHintTimeout()
 
-        if (!zoomed) {
-            zoomed = true
+        if (nearby.radiusNm != zoomedRadius) {
+            zoomedRadius = nearby.radiusNm
             val box = BoundingBox.fromGeoPointsSafe(circle)
             val padding = (ZOOM_PADDING_DP * resources.displayMetrics.density).toInt()
             // Zooming needs the map's size, which is known only after layout

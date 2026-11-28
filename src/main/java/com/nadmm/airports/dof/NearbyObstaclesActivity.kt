@@ -30,8 +30,8 @@ import com.nadmm.airports.data.DatabaseManager.LocationColumns
 class NearbyObstaclesActivity : FragmentActivityBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setActionBarTitle("Nearby Obstacles",
-            "Within ${NearbyObstaclesFragment.RADIUS_NM} NM radius")
+        // The fragment gives the subtitle, as it knows the radius
+        setActionBarTitle("Nearby Obstacles")
         addFragment(NearbyObstaclesFragment::class.java, intent.extras)
     }
 
