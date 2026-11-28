@@ -23,22 +23,25 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.osmdroid.util.BoundingBox
 
 /**
- * The obstacles found near a location, within [radiusNm], that the filters
- * let through, out of [total] found.
+ * The tallest obstacles in the map's view that the filters let through,
+ * searched around [location]: [inView] obstacles are in view, [matching] of
+ * them pass the filters, and [obstacles] are the tallest of those, up to a
+ * limit.
  */
 class NearbyObstacles(
     val location: Location,
-    val radiusNm: Int,
     val obstacles: List<DofListDataModel>,
-    val total: Int = obstacles.size
+    val inView: Int,
+    val matching: Int,
 )
 
 /**
- * Shares the nearby obstacles with the Map and List tabs: the screen finds
- * them, and the tabs show them. Until it can, [message] says why, such as no
- * location permission.
+ * Shares the obstacles with the Map and List tabs: the map gives its view,
+ * the screen finds the tallest obstacles in it, and both tabs show them.
+ * Until it can, [message] says why, such as no location permission.
  */
 class NearbyObstaclesViewModel : ViewModel() {
     private val _nearby = MutableStateFlow<NearbyObstacles?>(null)
@@ -47,6 +50,10 @@ class NearbyObstaclesViewModel : ViewModel() {
     private val _message = MutableStateFlow<String?>(null)
     val message: StateFlow<String?> = _message.asStateFlow()
 
+    // The map's view, once it has settled after a move or zoom
+    private val _viewport = MutableStateFlow<BoundingBox?>(null)
+    val viewport: StateFlow<BoundingBox?> = _viewport.asStateFlow()
+
     fun publish(nearby: NearbyObstacles) {
         _message.value = null
         _nearby.value = nearby
@@ -54,5 +61,9 @@ class NearbyObstaclesViewModel : ViewModel() {
 
     fun publishMessage(message: String) {
         _message.value = message
+    }
+
+    fun setViewport(viewport: BoundingBox) {
+        _viewport.value = viewport
     }
 }

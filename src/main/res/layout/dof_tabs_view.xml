@@ -25,7 +25,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!-- Filters for both tabs, by height, lighting and search radius.
+    <!-- Filters for both tabs, by height, lighting and type.
          The chips share the row's width, long labels shortened, so each
          chip's icon stays on screen. -->
     <FrameLayout
@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <com.google.android.material.chip.Chip
-                android:id="@+id/dof_filter_radius"
+                android:id="@+id/dof_filter_type"
                 style="@style/FilterBarChip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />

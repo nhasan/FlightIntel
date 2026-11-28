@@ -25,7 +25,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
@@ -34,37 +36,41 @@ import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.databinding.DofTabsViewBinding
 import com.nadmm.airports.utils.FilterChips
 import com.nadmm.airports.utils.FilterChips.Choice
+import com.nadmm.airports.utils.GeoUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.osmdroid.util.BoundingBox
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.Polygon
 import java.util.Locale
 
 /**
- * The Obstacles screen: finds the obstacles near the location, and shows them
- * on its Map and List tabs. The location is followed here, for the whole
- * screen, so it keeps up whichever tab shows, and its prompts, such as for
- * location permission, show over both.
+ * The Obstacles screen: shows the tallest obstacles in the map's view, up to
+ * [MAX_SHOWN], on its Map and List tabs. Zooming out shows only the taller
+ * ones, and zooming in the shorter ones too. The map opens on the location,
+ * which is followed here, for the whole screen, so the distances keep up
+ * whichever tab shows, and its prompts, such as for location permission,
+ * show over both.
  *
- * Chips above the tabs filter by height and lighting, and set the search
- * radius; the choices are remembered from one visit to the next.
+ * Chips above the tabs filter by height, lighting and type; the choices are
+ * remembered from one visit to the next.
  */
 class NearbyObstaclesFragment : LocationFragmentBase() {
     private var _binding: DofTabsViewBinding? = null
     private val binding get() = _binding!!
     private val viewModel: NearbyObstaclesViewModel by activityViewModels()
 
-    // The obstacles within the radius searched, before the other filters
-    private var found: List<DofListDataModel> = emptyList()
-    private var foundAt: Location? = null
-    private var foundRadius = 0
+    // The obstacles of an area around the view, and the one being loaded
+    private var area: ObstacleArea? = null
+    private var loading: Job? = null
+    private var loadingBox: BoundingBox? = null
 
     private var filterChips: FilterChips? = null
     private lateinit var height: FilterChips.Filter
     private lateinit var lighting: FilterChips.Filter
-    private lateinit var radius: FilterChips.Filter
-
-    private val radiusNm: Int
-        get() = radius.value?.toIntOrNull() ?: DEFAULT_RADIUS_NM
+    private lateinit var type: FilterChips.Filter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -76,7 +82,6 @@ class NearbyObstaclesFragment : LocationFragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpFilters()
-        setActionBarSubtitle("Within $radiusNm NM radius")
         binding.dofPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount() = TABS.size
 
@@ -89,41 +94,54 @@ class NearbyObstaclesFragment : LocationFragmentBase() {
         TabLayoutMediator(binding.dofTabs, binding.dofPager) { tab, position ->
             tab.text = TABS[position].first
         }.attach()
+
+        // Each time the map settles on a new view
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.viewport.collect { update() }
+            }
+        }
     }
 
     override fun onDestroyView() {
         filterChips = null
+        loading = null
+        loadingBox = null
         _binding = null
         super.onDestroyView()
     }
 
     private fun setUpFilters() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val bar = FilterChips(binding.dofFilters, binding.dofFilterChips, prefs) { onFiltersChanged() }
+        val bar = FilterChips(binding.dofFilters, binding.dofFilterChips, prefs) { update() }
         height = bar.add(bar.Filter(binding.dofFilterHeight, "Height", "dof_filter_height",
             label = ::heightLabel,
-            allCount = { countExcept(height) },
+            allCount = { inView().count { matches(it, except = height) } },
             choices = {
+                val others = inView().filter { matches(it, except = height) }
                 HEIGHTS_FT.map { ft ->
-                    Choice(ft.toString(), heightLabel(ft.toString()),
-                        found.count { matches(it, except = height) && it.aglHeight >= ft })
+                    Choice(ft.toString(), heightLabel(ft.toString()), others.count { it.aglHeight >= ft })
                 }
             }))
         lighting = bar.add(bar.Filter(binding.dofFilterLighting, "Lighting", "dof_filter_lighting",
             label = { if (it == LIGHTED) "Lighted" else "Unlit" },
-            allCount = { countExcept(lighting) },
+            allCount = { inView().count { matches(it, except = lighting) } },
             choices = {
-                val others = found.filter { matches(it, except = lighting) }
+                val others = inView().filter { matches(it, except = lighting) }
                 listOf(
                     Choice(LIGHTED, "Lighted", others.count { it.isLighted }),
                     // Unknown lighting counts as unlit: it can't be relied on
                     Choice(UNLIT, "Unlit", others.count { !it.isLighted }),
                 )
             }))
-        radius = bar.add(bar.Filter(binding.dofFilterRadius, "Radius", "dof_filter_radius",
-            default = DEFAULT_RADIUS_NM.toString(),
-            label = { "$it NM" },
-            choices = { RADII_NM.map { Choice(it.toString(), "$it NM") } }))
+        type = bar.add(bar.Filter(binding.dofFilterType, "Type", "dof_filter_type",
+            allCount = { inView().count { matches(it, except = type) } },
+            choices = {
+                inView().filter { matches(it, except = type) }
+                    .groupingBy { it.typeName }.eachCount()
+                    .toSortedMap(String.CASE_INSENSITIVE_ORDER)
+                    .map { (name, count) -> Choice(name, name, count) }
+            }))
         filterChips = bar
         bar.update()
     }
@@ -131,66 +149,108 @@ class NearbyObstaclesFragment : LocationFragmentBase() {
     private fun heightLabel(key: String): String =
         String.format(Locale.US, "%,d ft+", key.toIntOrNull() ?: 0)
 
-    /** Whether the filters other than [except] let [obstacle] through. */
-    private fun matches(obstacle: DofListDataModel, except: FilterChips.Filter? = null): Boolean {
+    /** Whether the filters other than [except] let [row] through. */
+    private fun matches(row: ObstacleRow, except: FilterChips.Filter? = null): Boolean {
         if (except !== height) {
-            height.value?.toIntOrNull()?.let { if (obstacle.aglHeight < it) return false }
+            height.value?.toIntOrNull()?.let { if (row.aglHeight < it) return false }
         }
         if (except !== lighting) {
             when (lighting.value) {
-                LIGHTED -> if (!obstacle.isLighted) return false
-                UNLIT -> if (obstacle.isLighted) return false
+                LIGHTED -> if (!row.isLighted) return false
+                UNLIT -> if (row.isLighted) return false
             }
+        }
+        if (except !== type) {
+            type.value?.let { if (row.typeName != it) return false }
         }
         return true
     }
 
-    private fun countExcept(filter: FilterChips.Filter) = found.count { matches(it, except = filter) }
+    /** The map's view, or until it gives one, the view it opens on. */
+    private fun view(reference: Location): BoundingBox =
+        viewModel.viewport.value ?: startBox(reference)
 
-    private fun onFiltersChanged() {
-        // A new radius needs a new search; the others only filter what was found
-        if (radiusNm != foundRadius) startLocationTask() else publish()
+    /** The obstacles in view, tallest first, before the filters. */
+    private fun inView(): List<ObstacleRow> {
+        val reference = lastLocation ?: return emptyList()
+        val area = area ?: return emptyList()
+        val view = view(reference)
+        return area.rows.filter { isInView(it, view) }
     }
 
+    private fun isInView(row: ObstacleRow, view: BoundingBox): Boolean =
+        row.latitude in view.latSouth..view.latNorth && row.longitude in view.lonWest..view.lonEast
+
     override fun startLocationTask() {
-        val location = lastLocation ?: return
-        val radiusNm = radiusNm
-        viewLifecycleOwner.lifecycleScope.launch {
-            val obstacles = withContext(Dispatchers.IO) {
-                val db = getDatabase(DatabaseManager.DB_DOF)
-                NearbyDofCursor(db, location, radiusNm).use { c ->
-                    val list = ArrayList<DofListDataModel>(c.count)
-                    while (c.moveToNext()) {
-                        list.add(DofListDataModel.fromCursor(c))
-                    }
-                    list
-                }
-            }
-            found = obstacles
-            foundAt = location
-            foundRadius = radiusNm
-            publish()
+        update()
+    }
+
+    /**
+     * Shows the tallest obstacles in the view, loading the area around it
+     * first when the view has moved out of the one loaded.
+     */
+    private fun update() {
+        if (_binding == null) return
+        val reference = lastLocation ?: return
+        val view = view(reference)
+        val area = area
+        if (area != null && area.covers(view)) {
+            publish(area, view, reference)
+        } else if (loadingBox?.let { box -> loading?.isActive == true && ObstacleArea.covers(box, view) } != true) {
+            load(view)
         }
     }
 
-    /** Shows what the filters let through, on both tabs. */
-    private fun publish() {
-        filterChips?.update()
-        val location = foundAt ?: return
-        val shown = found.filter { matches(it) }
-        viewModel.publish(NearbyObstacles(location, foundRadius, shown, found.size))
-        setActionBarSubtitle(
-            if (shown.size < found.size) "${shown.size} of ${found.size} within $foundRadius NM"
-            else "Within $foundRadius NM radius")
+    private fun load(view: BoundingBox) {
+        // The view and as much again on each side, so moving about needs no load
+        val box = view.increaseByScale(AREA_SCALE)
+        loading?.cancel()
+        loadingBox = box
+        loading = viewLifecycleOwner.lifecycleScope.launch {
+            area = withContext(Dispatchers.IO) {
+                ObstacleArea.load(getDatabase(DatabaseManager.DB_DOF), box)
+            }
+            update()
+        }
     }
+
+    /** Shows the tallest in [view] that the filters let through, on both tabs. */
+    private fun publish(area: ObstacleArea, view: BoundingBox, reference: Location) {
+        filterChips?.update()
+        val declination = GeoUtils.getMagneticDeclination(reference)
+        var inView = 0
+        var matching = 0
+        val shown = ArrayList<DofListDataModel>()
+        // Tallest first, so the first that match are the tallest
+        for (row in area.rows) {
+            if (!isInView(row, view)) continue
+            inView++
+            if (!matches(row)) continue
+            matching++
+            if (shown.size < MAX_SHOWN) shown.add(DofListDataModel.fromRow(row, reference, declination))
+        }
+        viewModel.publish(NearbyObstacles(reference, shown, inView, matching))
+        setActionBarSubtitle(when {
+            matching > shown.size -> "Tallest ${count(shown.size)} of ${count(matching)} in view"
+            matching < inView -> "${count(matching)} of ${count(inView)} in view"
+            else -> "${count(inView)} in view"
+        })
+    }
+
+    private fun count(n: Int) = String.format(Locale.US, "%,d", n)
 
     override fun showLocationMessage(message: String) {
         viewModel.publishMessage(message)
     }
 
     companion object {
-        const val DEFAULT_RADIUS_NM = 5
-        private val RADII_NM = listOf(5, 10, 20)
+        /** At most this many obstacles show, the tallest in view. */
+        const val MAX_SHOWN = 100
+        /** The map opens to show this far around the location. */
+        const val START_RADIUS_NM = 5
+        // How much bigger than the view the area loaded around it is
+        private const val AREA_SCALE = 3f
+
         // Above ground: most obstacles are short, and hiding them shows those
         // that matter at pattern and cruise altitudes. 50 ft drops the fences,
         // signs and short poles that crowd the map further out.
@@ -204,5 +264,12 @@ class NearbyObstaclesFragment : LocationFragmentBase() {
             "Map" to NearbyObstaclesMapFragment::class.java,
             "List" to NearbyObstaclesListFragment::class.java,
         )
+
+        /** The view the map opens on: [START_RADIUS_NM] around [location]. */
+        fun startBox(location: Location): BoundingBox {
+            val center = GeoPoint(location.latitude, location.longitude)
+            val meters = START_RADIUS_NM * GeoUtils.METERS_PER_NAUTICAL_MILE.toDouble()
+            return BoundingBox.fromGeoPointsSafe(Polygon.pointsAsCircle(center, meters))
+        }
     }
 }

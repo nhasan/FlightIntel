@@ -20,17 +20,23 @@ package com.nadmm.airports.dof
 
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.RecyclerView
+import com.nadmm.airports.R
 import com.nadmm.airports.RecyclerViewFragment
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 /**
- * The List tab of the Obstacles screen: the obstacles the screen found,
- * tallest first, or why there are none yet.
+ * The List tab of the Obstacles screen: the same obstacles as the Map tab,
+ * those in its view, tallest first, or why there are none yet.
  */
 class NearbyObstaclesListFragment : RecyclerViewFragment() {
     private val viewModel: NearbyObstaclesViewModel by activityViewModels()
@@ -42,12 +48,14 @@ class NearbyObstaclesListFragment : RecyclerViewFragment() {
                 viewModel.nearby.combine(viewModel.message) { nearby, message -> nearby to message }
                     .collect { (nearby, message) ->
                         val obstacles = nearby?.obstacles.orEmpty()
-                        recyclerView.adapter = DofRecyclerViewAdapter(obstacles)
+                        // Says where they're from, as panning the map changes them
+                        recyclerView.adapter = ConcatAdapter(
+                            HeaderAdapter(HEADER_TEXT), DofRecyclerViewAdapter(obstacles))
                         setEmptyText(when {
                             message != null -> message
                             nearby == null -> WAITING_TEXT
-                            nearby.total > 0 -> "No obstacles match the filters"
-                            else -> "No obstacles within ${nearby.radiusNm} NM"
+                            nearby.inView > 0 -> "No obstacles match the filters"
+                            else -> "No obstacles in the map's view"
                         })
                         setListShown(obstacles.isNotEmpty())
                     }
@@ -55,8 +63,31 @@ class NearbyObstaclesListFragment : RecyclerViewFragment() {
         }
     }
 
+    /** One line of text above the list. */
+    private class HeaderAdapter(private val text: String) :
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            val padding = parent.resources.getDimensionPixelSize(R.dimen.item_padding)
+            val view = TextView(parent.context).apply {
+                TextViewCompat.setTextAppearance(this, R.style.TextSmall)
+                setPadding(padding, 0, padding, padding / 2)
+                layoutParams = RecyclerView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+            return object : RecyclerView.ViewHolder(view) {}
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            (holder.itemView as TextView).text = text
+        }
+
+        override fun getItemCount() = 1
+    }
+
     companion object {
         private const val WAITING_TEXT =
             "Obstacles appear here once your location is known."
+        private const val HEADER_TEXT = "The obstacles in the map's view, tallest first"
     }
 }
