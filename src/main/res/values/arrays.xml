@@ -30,8 +30,15 @@
         <item>30</item>
         <item>50</item>
     </string-array>
+    <!-- The values saved for the home screen setting; kept as they are, since
+         a changed value would no longer match what is saved -->
     <string-array name="home_screen">
         <item>@string/afd</item>
+        <item>@string/weather</item>
+    </string-array>
+    <!-- How those choices read in the setting, in the same order -->
+    <string-array name="home_screen_names">
+        <item>@string/airports</item>
         <item>@string/weather</item>
     </string-array>
     <string-array name="themes">

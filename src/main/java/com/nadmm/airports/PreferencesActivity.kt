@@ -1,7 +1,7 @@
 /*
  * FlightIntel for Pilots
  *
- * Copyright 2011-2025 Nadeem Hasan <nhasan@nadmm.com>
+ * Copyright 2011-2026 Nadeem Hasan <nhasan@nadmm.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,10 +115,10 @@ class PreferencesActivity : FragmentActivityBase() {
             }
 
             val radius = findPreference<ListPreference?>(KEY_LOCATION_NEARBY_RADIUS)
-            radius?.setSummaryProvider(SummaryProvider { _ : Preference? -> "Show locations within " + radius.getValue() + " NM radius" })
+            radius?.summaryProvider = SummaryProvider { _ : Preference? -> "Show locations within " + radius.value + " NM radius" }
 
             val homeScreen = findPreference<ListPreference?>(KEY_HOME_SCREEN)
-            homeScreen?.setSummaryProvider(SummaryProvider { _ : Preference? -> "Show " + homeScreen.getValue() + " screen on startup" })
+            homeScreen?.setSummaryProvider(SummaryProvider { _ : Preference? -> "Show " + homeScreen.entry + " screen on startup" })
 
             // App messages need notification permission on Android 13 and
             // later: turning them on asks for it, or opens the system

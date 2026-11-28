@@ -25,7 +25,7 @@
         <ListPreference
             android:key="home_screen"
             android:title="Home screen"
-            android:entries="@array/home_screen"
+            android:entries="@array/home_screen_names"
             android:entryValues="@array/home_screen"
             android:defaultValue="@string/afd" />
         <SwitchPreferenceCompat
