@@ -482,6 +482,29 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     open fun onFragmentStarted(fragment: FragmentBase) {
         showAppBar()
+        setAppBarScrolls(fragment.scrollsAppBar)
+    }
+
+    // Each app bar child's scroll flags as the layout set them
+    private val appBarScrollFlags = HashMap<View, Int>()
+
+    /**
+     * Turns off, or back on, the scroll flags the layout gave the app bar's
+     * children. The page below is sized for the toolbar scrolled away, so a
+     * page that can't scroll it away would end below the screen.
+     */
+    private fun setAppBarScrolls(scrolls: Boolean) {
+        val appBar = mAppBar ?: return
+        for (i in 0 until appBar.childCount) {
+            val child = appBar.getChildAt(i)
+            val params = child.layoutParams as? AppBarLayout.LayoutParams ?: continue
+            val flags = appBarScrollFlags.getOrPut(child) { params.scrollFlags }
+            val wanted = if (scrolls) flags else 0
+            if (params.scrollFlags != wanted) {
+                params.scrollFlags = wanted
+                child.layoutParams = params
+            }
+        }
     }
 
     // Subclasses can override this for custom behavior

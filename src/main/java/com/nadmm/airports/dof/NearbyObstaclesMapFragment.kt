@@ -169,6 +169,10 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         super.onPause()
     }
 
+    // The map takes every drag, so it never scrolls the toolbar away
+    override val scrollsAppBar: Boolean
+        get() = false
+
     override fun onDestroyView() {
         mapView?.onDetach()
         mapView = null
