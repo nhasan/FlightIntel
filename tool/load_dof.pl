@@ -89,8 +89,6 @@ my $insert_dof_record = "INSERT INTO dof ("
 
 $dbh->do( "DROP TABLE IF EXISTS dof" );
 $dbh->do( $create_dof_table );
-#$dbh->do( "CREATE INDEX idx_lat on dof ( LATITUDE_DEGREES );" );
-#$dbh->do( "CREATE INDEX idx_lon on dof ( LONGITUDE_DEGREES );" );
 
 my $sth_dof = $dbh->prepare( $insert_dof_record );
 
@@ -183,6 +181,12 @@ while ( my $line = <DOF_FILE> )
 print( "\rFinished processing $i records.\n" );
 
 close DOF_FILE;
+
+# The app finds the obstacles in an area around its map's view by position:
+# within a range of latitude, then of longitude. Built once the rows are in,
+# which is quicker than keeping it up to date row by row.
+print( "Indexing positions...\n" );
+$dbh->do( "CREATE INDEX idx_dof_position on dof ( LATITUDE_DEGREES, LONGITUDE_DEGREES );" );
 
 $dbh->disconnect();
 
