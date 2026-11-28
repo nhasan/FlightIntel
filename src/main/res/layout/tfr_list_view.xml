@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2026 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- Filters by state, center and type. The chips share the row's width,
+         long labels shortened, so each chip's icon stays on screen. -->
+    <FrameLayout
+        android:id="@+id/tfr_filters"
+        android:paddingStart="@dimen/item_padding"
+        android:paddingEnd="@dimen/item_padding"
+        android:paddingTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <!-- Checked shows that a value is chosen, by the chip's fill and its
+             clear icon; a check mark would only take room from the label,
+             which ends in an ellipsis when the chips share a narrow row -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/tfr_filter_chips"
+            app:singleLine="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <com.google.android.material.chip.Chip
+                android:id="@+id/tfr_filter_state"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:checkable="true"
+                android:ellipsize="end"
+                app:checkedIconVisible="false"
+                app:closeIconVisible="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/tfr_filter_center"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:checkable="true"
+                android:ellipsize="end"
+                app:checkedIconVisible="false"
+                app:closeIconVisible="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/tfr_filter_type"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:checkable="true"
+                android:ellipsize="end"
+                app:checkedIconVisible="false"
+                app:closeIconVisible="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.chip.ChipGroup>
+    </FrameLayout>
+    <!-- Shown in place of the list when there is nothing to list -->
+    <TextView android:id="@+id/tfr_list_empty"
+        android:padding="4dp"
+        android:gravity="center"
+        android:visibility="gone"
+        style="@style/TextSmall.Bold"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@id/recycler_view"
+        android:listSelector="?attr/selectableItemBackground"
+        android:footerDividersEnabled="false"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="?attr/listview_margin_bottom"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+</LinearLayout>

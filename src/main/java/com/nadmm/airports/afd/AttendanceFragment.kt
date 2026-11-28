@@ -31,6 +31,7 @@ import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager.*
+import com.nadmm.airports.data.DatabaseManager.Companion.DB_FADDS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

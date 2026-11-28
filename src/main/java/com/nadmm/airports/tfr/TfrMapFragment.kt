@@ -113,6 +113,8 @@ class TfrMapFragment : FragmentBase() {
             ?.let { TfrLabelOverlay(it, metrics, TITLE_COLOR) }
         title?.let { map.overlays.add(it) }
         OsmMaps.addScaleAndAttribution(map)
+        OsmMaps.runUnderSystemBars(map)
+        OsmMaps.showWhenOffline(map, viewLifecycleOwner)
 
         val all = points.flatten()
         if (all.isNotEmpty()) {
@@ -161,6 +163,10 @@ class TfrMapFragment : FragmentBase() {
         mapView?.onPause()
         super.onPause()
     }
+
+    // The map takes every drag, so it never scrolls the toolbar away
+    override val scrollsAppBar: Boolean
+        get() = false
 
     override fun onDestroyView() {
         mapView?.onDetach()

@@ -110,6 +110,14 @@ abstract class FragmentBase : Fragment(), IRefreshable {
 
     override fun requestDataRefresh() {}
 
+    /**
+     * False for a page, such as a map, that takes every drag itself and so
+     * never scrolls the toolbar away; the toolbar then stays put, and the page
+     * ends at the bottom of the screen rather than below it.
+     */
+    open val scrollsAppBar: Boolean
+        get() = true
+
     fun getDatabase(type: String): SQLiteDatabase {
         return activityBase.getDatabase(type)
     }

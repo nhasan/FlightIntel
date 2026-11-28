@@ -46,9 +46,9 @@ import com.nadmm.airports.data.DatabaseManager.Aff3
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.Attendance
 import com.nadmm.airports.data.DatabaseManager.Awos1
-import com.nadmm.airports.data.DatabaseManager.DB_DAFD
-import com.nadmm.airports.data.DatabaseManager.DB_DTPP
-import com.nadmm.airports.data.DatabaseManager.DB_FADDS
+import com.nadmm.airports.data.DatabaseManager.Companion.DB_DAFD
+import com.nadmm.airports.data.DatabaseManager.Companion.DB_DTPP
+import com.nadmm.airports.data.DatabaseManager.Companion.DB_FADDS
 import com.nadmm.airports.data.DatabaseManager.Dafd
 import com.nadmm.airports.data.DatabaseManager.DafdCycle
 import com.nadmm.airports.data.DatabaseManager.Dtpp

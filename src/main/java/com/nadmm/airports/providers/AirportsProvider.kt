@@ -59,7 +59,7 @@ class AirportsProvider : ContentProvider() {
     }
 
     private fun suggestAirports(uri: Uri, query: String): Cursor? {
-        val dbManager = DatabaseManager.instance(context)
+        val dbManager = DatabaseManager.instance(requireContext())
         val db = dbManager.getDatabase(DatabaseManager.DB_FADDS) ?: return null
         val selection = (Airports.FAA_CODE + "=? OR "
                 + Airports.ICAO_CODE + "=? OR "
@@ -76,15 +76,15 @@ class AirportsProvider : ContentProvider() {
         )
     }
 
-    private fun searchAirports(uri: Uri, query: String): Cursor {
+    private fun searchAirports(uri: Uri, query: String): Cursor? {
         val selection = ("(" + Airports.FAA_CODE + "=? OR "
                 + Airports.ICAO_CODE + "=? OR "
                 + Airports.FACILITY_NAME + " LIKE ? ) OR "
                 + Airports.ASSOC_CITY + " LIKE ?")
         val selectionArgs = arrayOf(query, query, "%$query%", "%$query%")
         val limit = uri.getQueryParameter("limit")
-        val dbManager = DatabaseManager.instance(context)
-        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS)
+        val dbManager = DatabaseManager.instance(requireContext())
+        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS) ?: return null
         return query(
             db, selection, selectionArgs,
             null, null, Airports.FACILITY_NAME + " ASC", limit

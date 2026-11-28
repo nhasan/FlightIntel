@@ -219,7 +219,7 @@
     <string name="drawer_close">Close Drawer</string>
     <string name="afd">A/FD</string>
     <string name="airports">Airports</string>
-    <string name="title_navdrawer_afd">A/FD</string>
+    <string name="title_navdrawer_afd">Airports</string>
     <string name="title_navdrawer_wx">Weather</string>
     <string name="title_navdrawer_dof">Obstacles</string>
     <string name="title_navdrawer_tfr">TFR</string>
@@ -249,5 +249,11 @@
         <item quantity="one">1 airport matching \'%2$s\'</item>
         <item quantity="other">%1$d airports matching \'%2$s\'</item>
     </plurals>
-    <string name="theme_default">BatterySaver</string>
+    <!-- The nearby radius setting's choices, and the values it saves in NM -->
+    <string name="nearby_radius_10">10 NM</string>
+    <string name="nearby_radius_30">30 NM</string>
+    <string name="nearby_radius_50">50 NM</string>
+    <string name="nearby_radius_value_10" translatable="false">10</string>
+    <string name="nearby_radius_value_30" translatable="false">30</string>
+    <string name="nearby_radius_value_50" translatable="false">50</string>
 </resources>

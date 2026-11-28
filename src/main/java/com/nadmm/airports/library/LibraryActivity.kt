@@ -21,6 +21,7 @@ package com.nadmm.airports.library
 import android.database.Cursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.os.Bundle
+import android.provider.BaseColumns
 import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.R
 import com.nadmm.airports.TabPagerActivityBase
@@ -77,7 +78,7 @@ class LibraryActivity : TabPagerActivityBase() {
         builder.tables = BookCategories.TABLE_NAME
         return builder.query(
             db, mColumns, null, null, null, null,
-            BookCategories._ID
+            BaseColumns._ID
         )
     }
 }

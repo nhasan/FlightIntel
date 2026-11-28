@@ -45,7 +45,7 @@ open class ImageViewActivity : FragmentActivityBase() {
 
     class ImageViewFragment : FragmentBase() {
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-            val view = ImageZoomView(activity, null)
+            val view = ImageZoomView(requireContext())
             view.setId(R.id.main_content)
             view.setLayoutParams(
                 ViewGroup.LayoutParams(
@@ -56,7 +56,7 @@ open class ImageViewActivity : FragmentActivityBase() {
                 val path = args.getString(IMAGE_PATH)
                 val bitmap = BitmapFactory.decodeFile(path)
                 if (bitmap != null) {
-                    view.setImage(bitmap)
+                    view.setImageBitmap(bitmap)
                 } else {
                     UiUtils.showToast(requireActivity(), "Unable to show image")
                 }

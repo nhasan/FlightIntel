@@ -97,7 +97,11 @@ class MetarFragment : WxFragmentBase(NoaaService.ACTION_GET_METAR) {
         val type = result.type
         if (NoaaService.TYPE_TEXT == type) {
             val metar = getResultObject(result, Metar::class.java)
-            if (metar.observationTime > lastMetar.observationTime) {
+            // A newer report, or the same one fetched again by a refresh, whose
+            // fetch time must show; a cached copy on returning to the tab is neither
+            if (metar.observationTime > lastMetar.observationTime
+                || (metar.observationTime == lastMetar.observationTime
+                    && metar.fetchTime > lastMetar.fetchTime)) {
                 lastMetar = metar
                 showMetar(metar)
             }

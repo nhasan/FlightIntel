@@ -100,7 +100,10 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
         val type = result.type
         if (NoaaService.TYPE_TEXT == type) {
             val taf = getResultObject(result, Taf::class.java)
-            if (taf.issueTime > lastTaf.issueTime) {
+            // A newer forecast, or the same one fetched again by a refresh, whose
+            // fetch time must show; a cached copy on returning to the tab is neither
+            if (taf.issueTime > lastTaf.issueTime
+                || (taf.issueTime == lastTaf.issueTime && taf.fetchTime > lastTaf.fetchTime)) {
                 lastTaf = taf
                 showTaf(taf)
             }
@@ -239,7 +242,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
     }
 
     private fun doQuery(stationId: String): Array<Cursor?> {
-        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS)
+        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS) ?: return arrayOfNulls(2)
 
         val tafStationId = findTafStationId(db, stationId) ?: return arrayOfNulls<Cursor>(2)
         // We have the station with TAF

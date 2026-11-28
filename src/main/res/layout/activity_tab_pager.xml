@@ -39,13 +39,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
+            app:statusBarForeground="?attr/colorSurface"
             android:orientation="vertical">
 
-            <include layout="@layout/toolbar_actionbar" />
+            <include layout="@layout/toolbar_actionbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_scrollFlags="scroll|enterAlways|snap" />
 
             <!-- Optional content above the tabs, shared by every page -->
             <FrameLayout
                 android:id="@+id/tab_pager_header"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -54,7 +59,6 @@
                 android:id="@+id/sliding_tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap"
                 app:tabMode="scrollable" />
         </com.google.android.material.appbar.AppBarLayout>
 

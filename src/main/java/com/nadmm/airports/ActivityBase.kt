@@ -68,10 +68,10 @@ import com.nadmm.airports.afd.AfdMainActivity
 import com.nadmm.airports.clocks.ClocksActivity
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
-import com.nadmm.airports.data.DatabaseManager.DB_FADDS
+import com.nadmm.airports.data.DatabaseManager.Companion.DB_FADDS
 import com.nadmm.airports.data.DatabaseManager.Nav1
 import com.nadmm.airports.data.DatabaseManager.States
-import com.nadmm.airports.data.DatabaseManager.instance
+import com.nadmm.airports.data.DatabaseManager.Companion.instance
 import com.nadmm.airports.data.DownloadActivity
 import com.nadmm.airports.databinding.AirportTitleLayoutBinding
 import com.nadmm.airports.dof.NearbyObstaclesActivity
@@ -117,6 +117,20 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         get() {
             if (mActionBarToolbar == null) {
                 mAppBar = findViewById(R.id.appbar)
+                // Where the layout covers the status bar, keep that strip the app
+                // bar's color as it lifts, so a toolbar scrolled under it stays hidden
+                mAppBar?.let { appBar ->
+                    // Tint the layout's drawable rather than set a new one: the app
+                    // bar sizes it only on layout, so a new one would draw nothing
+                    val foreground = appBar.statusBarForeground?.mutate() ?: return@let
+                    appBar.addLiftOnScrollProgressListener(
+                        object : AppBarLayout.LiftOnScrollProgressListener() {
+                            override fun onUpdate(elevation: Float, backgroundColor: Int, progress: Float) {
+                                foreground.setTint(backgroundColor)
+                                appBar.invalidate()
+                            }
+                        })
+                }
                 mActionBarToolbar = findViewById(R.id.toolbar_actionbar)
                 if (mActionBarToolbar != null) {
                     setSupportActionBar(mActionBarToolbar)
@@ -132,8 +146,11 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     protected open val selfNavDrawerItem: Int = NAVDRAWER_ITEM_INVALID
 
-    /** False for screens where search has no place, such as Downloads. */
-    protected open val showsSearch: Boolean = true
+    /**
+     * Whether the toolbar offers search. Search finds airports, so only the
+     * airport (A/FD) screens offer it.
+     */
+    protected open val showsSearch: Boolean = false
 
     var isRefreshing: Boolean
         get() = mSwipeRefreshLayout?.isRefreshing ?: false
@@ -449,10 +466,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
                 R.color.refresh_progress_3)
         mSwipeRefreshLayout?.setOnRefreshListener { this.requestDataRefresh() }
 
-        if (mSwipeRefreshLayout is MultiSwipeRefreshLayout) {
-            val mswrl = mSwipeRefreshLayout as MultiSwipeRefreshLayout?
-            mswrl!!.setCanChildScrollUpCallback(this)
-        }
+        (mSwipeRefreshLayout as? MultiSwipeRefreshLayout)?.canChildScrollUpCallback = this
     }
 
     override fun canSwipeRefreshChildScrollUp(): Boolean {
@@ -471,6 +485,29 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
 
     open fun onFragmentStarted(fragment: FragmentBase) {
         showAppBar()
+        setAppBarScrolls(fragment.scrollsAppBar)
+    }
+
+    // Each app bar child's scroll flags as the layout set them
+    private val appBarScrollFlags = HashMap<View, Int>()
+
+    /**
+     * Turns off, or back on, the scroll flags the layout gave the app bar's
+     * children. The page below is sized for the toolbar scrolled away, so a
+     * page that can't scroll it away would end below the screen.
+     */
+    private fun setAppBarScrolls(scrolls: Boolean) {
+        val appBar = mAppBar ?: return
+        for (i in 0 until appBar.childCount) {
+            val child = appBar.getChildAt(i)
+            val params = child.layoutParams as? AppBarLayout.LayoutParams ?: continue
+            val flags = appBarScrollFlags.getOrPut(child) { params.scrollFlags }
+            val wanted = if (scrolls) flags else 0
+            if (params.scrollFlags != wanted) {
+                params.scrollFlags = wanted
+                child.layoutParams = params
+            }
+        }
     }
 
     // Subclasses can override this for custom behavior
