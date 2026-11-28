@@ -20,10 +20,23 @@ package com.nadmm.airports.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginTop
 import androidx.core.view.updateLayoutParams
+import androidx.core.widget.TextViewCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.color.MaterialColors
+import com.nadmm.airports.R
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.CustomZoomButtonsController
@@ -38,6 +51,8 @@ object OsmMaps {
     private const val SCALE_BAR_OFFSET_DP = 12f
     // osmdroid's own offset for the attribution, from the bottom left
     private const val COPYRIGHT_OFFSET_PX = 10
+    private const val OFFLINE_PADDING_DP = 8f
+    private const val OFFLINE_TEXT = "Offline: map detail may be missing"
 
     /**
      * Configures osmdroid. The OSM tile usage policy requires an identifying
@@ -107,8 +122,11 @@ object OsmMaps {
             val bars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
             v.setPadding(bars.left, 0, bars.right, bars.bottom)
+            // The top margin belongs to the offline notice, when it shows
             map.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                setMargins(-bars.left, 0, -bars.right, -bars.bottom)
+                leftMargin = -bars.left
+                rightMargin = -bars.right
+                bottomMargin = -bars.bottom
             }
             for (overlay in map.overlays) {
                 when (overlay) {
@@ -124,6 +142,109 @@ object OsmMaps {
             insets
         }
         ViewCompat.requestApplyInsets(container)
+    }
+
+    /**
+     * While the app has no network, shows a strip above [map] saying so: the
+     * map then shows only tiles kept in the cache, and areas never seen at
+     * the zoom shown appear blurred, scaled up from a lower zoom. The
+     * map moves down below the strip rather than hide under it. When the
+     * network comes back, the strip goes and the map redraws, fetching the
+     * tiles it is missing. Watches only while [owner] is started.
+     */
+    fun showWhenOffline(map: MapView, owner: LifecycleOwner) {
+        val container = map.parent as? ViewGroup ?: return
+        val context = map.context
+        val padding = (OFFLINE_PADDING_DP * map.resources.displayMetrics.density).toInt()
+        val notice = TextView(context).apply {
+            TextViewCompat.setTextAppearance(this, R.style.TextSmall)
+            text = OFFLINE_TEXT
+            gravity = Gravity.CENTER
+            setPadding(padding, padding, padding, padding)
+            setBackgroundColor(MaterialColors.getColor(this,
+                com.google.android.material.R.attr.colorSurfaceContainerHighest))
+            setTextColor(MaterialColors.getColor(this,
+                com.google.android.material.R.attr.colorOnSurfaceVariant))
+            visibility = View.GONE
+        }
+        container.addView(notice, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+            Gravity.TOP))
+        // The map starts below the strip while it shows
+        notice.addOnLayoutChangeListener { v, _, top, _, bottom, _, _, _, _ ->
+            val height = if (v.visibility == View.VISIBLE) bottom - top else 0
+            if (map.marginTop != height) {
+                map.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin = height }
+            }
+        }
+
+        val cm = context.getSystemService(ConnectivityManager::class.java)
+        fun show(online: Boolean) {
+            if (online == (notice.visibility == View.GONE)) return
+            notice.visibility = if (online) View.GONE else View.VISIBLE
+            if (online) {
+                map.updateLayoutParams<ViewGroup.MarginLayoutParams> { topMargin = 0 }
+                // Missing tiles are requested again as the map draws
+                map.invalidate()
+            }
+        }
+        // Networks with the internet, and those blocked for this app, as the
+        // callback reports them on a binder thread
+        val internet = mutableSetOf<Network>()
+        val blocked = mutableSetOf<Network>()
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            private fun update() {
+                val online = synchronized(internet) { (internet - blocked).isNotEmpty() }
+                map.post { show(online) }
+            }
+
+            override fun onCapabilitiesChanged(network: Network, caps: NetworkCapabilities) {
+                synchronized(internet) {
+                    if (caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)) {
+                        internet.add(network)
+                    } else {
+                        internet.remove(network)
+                    }
+                }
+                update()
+            }
+
+            // Such as by Data Saver, or a setting that turns off the app's data
+            override fun onBlockedStatusChanged(network: Network, isBlocked: Boolean) {
+                synchronized(internet) {
+                    if (isBlocked) blocked.add(network) else blocked.remove(network)
+                }
+                update()
+            }
+
+            override fun onLost(network: Network) {
+                synchronized(internet) {
+                    internet.remove(network)
+                    blocked.remove(network)
+                }
+                update()
+            }
+        }
+
+        owner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                // Start from what holds now, so the strip doesn't flash while the
+                // first calls come; with no network at all, none come. The
+                // active network is null while it is blocked for this app.
+                synchronized(internet) {
+                    internet.clear()
+                    blocked.clear()
+                }
+                val online = cm.getNetworkCapabilities(cm.activeNetwork)
+                    ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+                show(online)
+                cm.registerDefaultNetworkCallback(callback)
+            }
+
+            override fun onStop(owner: LifecycleOwner) {
+                cm.unregisterNetworkCallback(callback)
+            }
+        })
     }
 
     /**

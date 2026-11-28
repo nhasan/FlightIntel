@@ -114,6 +114,7 @@ class TfrMapFragment : FragmentBase() {
         title?.let { map.overlays.add(it) }
         OsmMaps.addScaleAndAttribution(map)
         OsmMaps.runUnderSystemBars(map)
+        OsmMaps.showWhenOffline(map, viewLifecycleOwner)
 
         val all = points.flatten()
         if (all.isNotEmpty()) {

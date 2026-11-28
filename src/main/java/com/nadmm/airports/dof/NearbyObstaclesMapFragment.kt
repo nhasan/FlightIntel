@@ -98,6 +98,7 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         map.overlays.add(obstacleOverlay)
         OsmMaps.addScaleAndAttribution(map)
         OsmMaps.runUnderSystemBars(map)
+        OsmMaps.showWhenOffline(map, viewLifecycleOwner)
 
         status?.text = WAITING_TEXT
         setFragmentContentShown(true)
