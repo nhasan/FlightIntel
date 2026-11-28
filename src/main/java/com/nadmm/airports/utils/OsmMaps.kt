@@ -20,6 +20,10 @@ package com.nadmm.airports.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.CustomZoomButtonsController
@@ -32,6 +36,8 @@ import java.util.Locale
 /** Shared setup for the app's OpenStreetMap maps. */
 object OsmMaps {
     private const val SCALE_BAR_OFFSET_DP = 12f
+    // osmdroid's own offset for the attribution, from the bottom left
+    private const val COPYRIGHT_OFFSET_PX = 10
 
     /**
      * Configures osmdroid. The OSM tile usage policy requires an identifying
@@ -84,6 +90,40 @@ object OsmMaps {
             setScaleBarOffset(offset, offset)
         })
         map.overlays.add(CopyrightOverlay(map.context))
+    }
+
+    /**
+     * Runs [map] on under the navigation bar and any side bars, while its
+     * parent's other views, and the map's scale bar, attribution and zoom
+     * buttons, stay clear of them. The parent keeps the padding the system
+     * bars need; the map reaches out past it. Call after
+     * [addScaleAndAttribution], from onViewCreated after super's.
+     */
+    fun runUnderSystemBars(map: MapView) {
+        val container = map.parent as? ViewGroup ?: return
+        val offset = (SCALE_BAR_OFFSET_DP * map.resources.displayMetrics.density).toInt()
+        container.clipToPadding = false
+        ViewCompat.setOnApplyWindowInsetsListener(container) { v, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            v.setPadding(bars.left, 0, bars.right, bars.bottom)
+            map.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                setMargins(-bars.left, 0, -bars.right, -bars.bottom)
+            }
+            for (overlay in map.overlays) {
+                when (overlay) {
+                    is ScaleBarOverlay ->
+                        overlay.setScaleBarOffset(offset + bars.right, offset + bars.bottom)
+                    is CopyrightOverlay ->
+                        overlay.setOffset(COPYRIGHT_OFFSET_PX + bars.left, COPYRIGHT_OFFSET_PX + bars.bottom)
+                }
+            }
+            map.zoomController.display.setAdditionalPixelMargins(
+                bars.left.toFloat(), 0f, bars.right.toFloat(), bars.bottom.toFloat())
+            map.invalidate()
+            insets
+        }
+        ViewCompat.requestApplyInsets(container)
     }
 
     /**

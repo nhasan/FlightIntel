@@ -91,6 +91,7 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         // After the search area, so taps reach the obstacles first
         map.overlays.add(obstacleOverlay)
         OsmMaps.addScaleAndAttribution(map)
+        OsmMaps.runUnderSystemBars(map)
 
         status?.text = WAITING_TEXT
         setFragmentContentShown(true)

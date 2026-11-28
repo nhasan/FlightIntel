@@ -113,6 +113,7 @@ class TfrMapFragment : FragmentBase() {
             ?.let { TfrLabelOverlay(it, metrics, TITLE_COLOR) }
         title?.let { map.overlays.add(it) }
         OsmMaps.addScaleAndAttribution(map)
+        OsmMaps.runUnderSystemBars(map)
 
         val all = points.flatten()
         if (all.isNotEmpty()) {
