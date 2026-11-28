@@ -68,10 +68,10 @@ import com.nadmm.airports.afd.AfdMainActivity
 import com.nadmm.airports.clocks.ClocksActivity
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.data.DatabaseManager.Airports
-import com.nadmm.airports.data.DatabaseManager.DB_FADDS
+import com.nadmm.airports.data.DatabaseManager.Companion.DB_FADDS
 import com.nadmm.airports.data.DatabaseManager.Nav1
 import com.nadmm.airports.data.DatabaseManager.States
-import com.nadmm.airports.data.DatabaseManager.instance
+import com.nadmm.airports.data.DatabaseManager.Companion.instance
 import com.nadmm.airports.data.DownloadActivity
 import com.nadmm.airports.databinding.AirportTitleLayoutBinding
 import com.nadmm.airports.dof.NearbyObstaclesActivity

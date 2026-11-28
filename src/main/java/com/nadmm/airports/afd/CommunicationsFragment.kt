@@ -33,7 +33,7 @@ import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager.Aff3
 import com.nadmm.airports.data.DatabaseManager.Airports
 import com.nadmm.airports.data.DatabaseManager.AtcPhones
-import com.nadmm.airports.data.DatabaseManager.DB_FADDS
+import com.nadmm.airports.data.DatabaseManager.Companion.DB_FADDS
 import com.nadmm.airports.data.DatabaseManager.Tower1
 import com.nadmm.airports.data.DatabaseManager.Tower2
 import com.nadmm.airports.data.DatabaseManager.Tower3

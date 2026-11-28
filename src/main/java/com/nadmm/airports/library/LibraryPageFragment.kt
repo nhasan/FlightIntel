@@ -24,6 +24,7 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.database.sqlite.SQLiteQueryBuilder
 import android.os.Bundle
+import android.provider.BaseColumns
 import android.text.format.Formatter
 import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
@@ -141,7 +142,7 @@ class LibraryPageFragment : FragmentBase() {
         builder.tables = Library.TABLE_NAME
         val c = builder.query(db, mColumns,
             Library.CATEGORY_CODE + "=?", arrayOf(category),
-            null, null, Library._ID)
+            null, null, BaseColumns._ID)
         var prevDesc = ""
         c.forEach {
             val name = c.getString(mColumns.indexOf(Library.BOOK_NAME))

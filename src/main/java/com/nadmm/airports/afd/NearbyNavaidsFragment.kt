@@ -31,6 +31,7 @@ import androidx.lifecycle.lifecycleScope
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager.*
+import com.nadmm.airports.data.DatabaseManager.Companion.DB_FADDS
 import com.nadmm.airports.utils.DataUtils.calculateRadial
 import com.nadmm.airports.utils.DataUtils.getMorseCode
 import com.nadmm.airports.utils.DataUtils.isDirectionalNavaid

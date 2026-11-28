@@ -239,7 +239,7 @@ class TafFragment : WxFragmentBase(NoaaService.ACTION_GET_TAF) {
     }
 
     private fun doQuery(stationId: String): Array<Cursor?> {
-        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS)
+        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS) ?: return arrayOfNulls(2)
 
         val tafStationId = findTafStationId(db, stationId) ?: return arrayOfNulls<Cursor>(2)
         // We have the station with TAF

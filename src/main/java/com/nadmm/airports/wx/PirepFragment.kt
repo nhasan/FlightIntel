@@ -104,7 +104,7 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
 
     private fun doQuery(stationId: String): Array<Cursor?> {
         val cursors = arrayOfNulls<Cursor>(2)
-        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS)
+        val db = dbManager.getDatabase(DatabaseManager.DB_FADDS) ?: return cursors
 
         var builder = SQLiteQueryBuilder()
         builder.tables = Wxs.TABLE_NAME
