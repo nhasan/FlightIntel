@@ -117,6 +117,20 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
         get() {
             if (mActionBarToolbar == null) {
                 mAppBar = findViewById(R.id.appbar)
+                // Where the layout covers the status bar, keep that strip the app
+                // bar's color as it lifts, so a toolbar scrolled under it stays hidden
+                mAppBar?.let { appBar ->
+                    // Tint the layout's drawable rather than set a new one: the app
+                    // bar sizes it only on layout, so a new one would draw nothing
+                    val foreground = appBar.statusBarForeground?.mutate() ?: return@let
+                    appBar.addLiftOnScrollProgressListener(
+                        object : AppBarLayout.LiftOnScrollProgressListener() {
+                            override fun onUpdate(elevation: Float, backgroundColor: Int, progress: Float) {
+                                foreground.setTint(backgroundColor)
+                                appBar.invalidate()
+                            }
+                        })
+                }
                 mActionBarToolbar = findViewById(R.id.toolbar_actionbar)
                 if (mActionBarToolbar != null) {
                     setSupportActionBar(mActionBarToolbar)
