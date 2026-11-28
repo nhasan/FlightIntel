@@ -105,7 +105,13 @@ class NearbyObstaclesMapFragment : FragmentBase() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.nearby.collect { nearby -> nearby?.let { show(it) } }
+                launch {
+                    viewModel.nearby.collect { nearby -> nearby?.let { show(it) } }
+                }
+                // Until there are obstacles, why not, such as no location permission
+                viewModel.message.collect { message ->
+                    if (viewModel.nearby.value == null) status?.text = message ?: WAITING_TEXT
+                }
             }
         }
     }

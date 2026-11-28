@@ -19,19 +19,20 @@
 package com.nadmm.airports.dof
 
 import android.os.Bundle
+import com.nadmm.airports.FragmentActivityBase
 import com.nadmm.airports.R
-import com.nadmm.airports.TabPagerActivityBase
 import com.nadmm.airports.data.DatabaseManager.LocationColumns
 
-/** Obstacles near the device's location, or a location passed in, as a list and a map. */
-class NearbyObstaclesActivity : TabPagerActivityBase() {
+/**
+ * Obstacles near the device's location, or a location passed in, on a map and
+ * in a list. [NearbyObstaclesFragment] holds both, as tabs.
+ */
+class NearbyObstaclesActivity : FragmentActivityBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setActionBarTitle("Nearby Obstacles",
             "Within ${NearbyObstaclesFragment.RADIUS_NM} NM radius")
-        val args = intent.extras
-        addTab("List", NearbyObstaclesFragment::class.java, args)
-        addTab("Map", NearbyObstaclesMapFragment::class.java, args)
+        addFragment(NearbyObstaclesFragment::class.java, intent.extras)
     }
 
     // Opened for a location, such as from an airport's details, it is a

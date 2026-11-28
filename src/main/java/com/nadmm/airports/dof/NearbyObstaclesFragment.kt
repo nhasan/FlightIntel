@@ -18,57 +18,90 @@
  */
 package com.nadmm.airports.dof
 
-import android.database.Cursor
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.RecyclerView
-import com.nadmm.airports.LocationListFragmentBase
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayoutMediator
+import com.nadmm.airports.LocationFragmentBase
 import com.nadmm.airports.data.DatabaseManager
+import com.nadmm.airports.databinding.DofTabsViewBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class NearbyObstaclesFragment : LocationListFragmentBase() {
-    private val mRadius = RADIUS_NM
-    // Shared with the Map tab, which draws the obstacles this list finds
+/**
+ * The Obstacles screen: finds the obstacles near the location, and shows them
+ * on its Map and List tabs. The location is followed here, for the whole
+ * screen, so it keeps up whichever tab shows, and its prompts, such as for
+ * location permission, show over both.
+ */
+class NearbyObstaclesFragment : LocationFragmentBase() {
+    private var _binding: DofTabsViewBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: NearbyObstaclesViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = DofTabsViewBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setEmptyText("No obstacles found nearby.")
+        binding.dofPager.adapter = object : FragmentStateAdapter(this) {
+            override fun getItemCount() = TABS.size
+
+            override fun createFragment(position: Int): Fragment =
+                TABS[position].second.getDeclaredConstructor().newInstance().apply {
+                    // The map labels the place passed in, such as an airport
+                    arguments = this@NearbyObstaclesFragment.arguments
+                }
+        }
+        TabLayoutMediator(binding.dofTabs, binding.dofPager) { tab, position ->
+            tab.text = TABS[position].first
+        }.attach()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     override fun startLocationTask() {
         val location = lastLocation ?: return
         viewLifecycleOwner.lifecycleScope.launch {
-            val (cursor, obstacles) = withContext(Dispatchers.IO) {
-                val c = doQuery()[0]
-                val list = ArrayList<DofListDataModel>(c.count)
-                if (c.moveToFirst()) {
-                    do {
+            val obstacles = withContext(Dispatchers.IO) {
+                val db = getDatabase(DatabaseManager.DB_DOF)
+                NearbyDofCursor(db, location, RADIUS_NM).use { c ->
+                    val list = ArrayList<DofListDataModel>(c.count)
+                    while (c.moveToNext()) {
                         list.add(DofListDataModel.fromCursor(c))
-                    } while (c.moveToNext())
+                    }
+                    list
                 }
-                c to list
             }
-            setCursor(cursor)
-            viewModel.publish(NearbyObstacles(location, mRadius, obstacles))
+            viewModel.publish(NearbyObstacles(location, RADIUS_NM, obstacles))
         }
     }
 
-    override fun newListAdapter(cursor: Cursor?): RecyclerView.Adapter<*>? {
-        return cursor?.let { DofRecyclerViewAdapter(it) }
-    }
-
-    private fun doQuery(): Array<Cursor> {
-        val db = getDatabase(DatabaseManager.DB_DOF)
-        val c: Cursor = NearbyDofCursor(db, lastLocation!!, mRadius)
-        return arrayOf(c)
+    override fun showLocationMessage(message: String) {
+        viewModel.publishMessage(message)
     }
 
     companion object {
         const val RADIUS_NM = 5
+
+        // The map first: where the obstacles are matters most. The list,
+        // tallest first, is a tab away.
+        private val TABS = listOf(
+            "Map" to NearbyObstaclesMapFragment::class.java,
+            "List" to NearbyObstaclesListFragment::class.java,
+        )
     }
 }

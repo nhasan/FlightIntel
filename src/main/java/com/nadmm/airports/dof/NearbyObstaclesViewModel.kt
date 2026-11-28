@@ -32,14 +32,23 @@ class NearbyObstacles(
 )
 
 /**
- * Shares the nearby obstacles between the List and Map tabs: the list finds
- * them and the map draws the same ones.
+ * Shares the nearby obstacles with the Map and List tabs: the screen finds
+ * them, and the tabs show them. Until it can, [message] says why, such as no
+ * location permission.
  */
 class NearbyObstaclesViewModel : ViewModel() {
     private val _nearby = MutableStateFlow<NearbyObstacles?>(null)
     val nearby: StateFlow<NearbyObstacles?> = _nearby.asStateFlow()
 
+    private val _message = MutableStateFlow<String?>(null)
+    val message: StateFlow<String?> = _message.asStateFlow()
+
     fun publish(nearby: NearbyObstacles) {
+        _message.value = null
         _nearby.value = nearby
+    }
+
+    fun publishMessage(message: String) {
+        _message.value = message
     }
 }

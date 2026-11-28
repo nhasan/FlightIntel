@@ -22,11 +22,11 @@ import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import android.util.Log
-import com.nadmm.airports.RecyclerViewFragment
+import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.utils.NetworkUtils
 
-class WxDelegate(private val fragment: RecyclerViewFragment) {
+class WxDelegate(private val fragment: FragmentBase) {
     private val stationIds = ArrayList<String>()
 
     fun setCursor(c: Cursor) {

@@ -57,7 +57,7 @@ class NotificationPermission(private val activity: ActivityBase) {
         // Let the screen's fragments start their own requests first
         activity.postRunnable({
             if (!activity.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
-                || LocationListFragmentBase.isRequestingPermission
+                || LocationFragmentBase.isRequestingPermission
                 || prefs.getBoolean(KEY_ASKED, false)
             ) {
                 // Asked again from onResume once the other request is done
