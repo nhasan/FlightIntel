@@ -21,14 +21,14 @@
  -->
 <resources>
     <string-array name="nearby_radius_entries">
-        <item>10 NM</item>
-        <item>30 NM</item>
-        <item>50 NM</item>
+        <item>@string/nearby_radius_10</item>
+        <item>@string/nearby_radius_30</item>
+        <item>@string/nearby_radius_50</item>
     </string-array>
     <string-array name="nearby_radius_values">
-        <item>10</item>
-        <item>30</item>
-        <item>50</item>
+        <item>@string/nearby_radius_value_10</item>
+        <item>@string/nearby_radius_value_30</item>
+        <item>@string/nearby_radius_value_50</item>
     </string-array>
     <!-- The values saved for the home screen setting; kept as they are, since
          a changed value would no longer match what is saved -->
@@ -40,15 +40,5 @@
     <string-array name="home_screen_names">
         <item>@string/airports</item>
         <item>@string/weather</item>
-    </string-array>
-    <string-array name="themes">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>Set by Battery Saver</item>
-    </string-array>
-    <string-array name="themes_values">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>BatterySaver</item>
     </string-array>
 </resources>
