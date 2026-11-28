@@ -449,10 +449,7 @@ abstract class ActivityBase : AppCompatActivity(), MultiSwipeRefreshLayout.CanCh
                 R.color.refresh_progress_3)
         mSwipeRefreshLayout?.setOnRefreshListener { this.requestDataRefresh() }
 
-        if (mSwipeRefreshLayout is MultiSwipeRefreshLayout) {
-            val mswrl = mSwipeRefreshLayout as MultiSwipeRefreshLayout?
-            mswrl!!.setCanChildScrollUpCallback(this)
-        }
+        (mSwipeRefreshLayout as? MultiSwipeRefreshLayout)?.canChildScrollUpCallback = this
     }
 
     override fun canSwipeRefreshChildScrollUp(): Boolean {
