@@ -112,6 +112,9 @@ class NearbyObstaclesMapFragment : FragmentBase() {
                 launch {
                     viewModel.nearby.collect { nearby -> nearby?.let { show(it) } }
                 }
+                launch {
+                    viewModel.recenter.collect { recenter() }
+                }
                 // Until there are obstacles, why not, such as no location permission
                 viewModel.message.collect { message ->
                     if (viewModel.nearby.value == null) status?.text = message ?: WAITING_TEXT
@@ -160,6 +163,14 @@ class NearbyObstaclesMapFragment : FragmentBase() {
             }
         }
         map.invalidate()
+    }
+
+    /** Goes back to the view the map opens on, around the latest location. */
+    private fun recenter() {
+        val map = mapView ?: return
+        val location = viewModel.nearby.value?.location ?: return
+        val padding = (ZOOM_PADDING_DP * resources.displayMetrics.density).toInt()
+        map.zoomToBoundingBox(NearbyObstaclesFragment.startBox(location), true, padding)
     }
 
     private fun showDetails(obstacle: DofListDataModel?) {

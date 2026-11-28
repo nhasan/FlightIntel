@@ -21,9 +21,13 @@ package com.nadmm.airports.dof
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -32,6 +36,7 @@ import androidx.preference.PreferenceManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.nadmm.airports.LocationFragmentBase
+import com.nadmm.airports.R
 import com.nadmm.airports.data.DatabaseManager
 import com.nadmm.airports.databinding.DofTabsViewBinding
 import com.nadmm.airports.utils.FilterChips
@@ -94,6 +99,22 @@ class NearbyObstaclesFragment : LocationFragmentBase() {
         TabLayoutMediator(binding.dofTabs, binding.dofPager) { tab, position ->
             tab.text = TABS[position].first
         }.attach()
+
+        // Back to the view the map opens on, from either tab
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.dof_menu, menu)
+                arguments?.getString(NearbyObstaclesActivity.EXTRA_PLACE_NAME)?.let {
+                    menu.findItem(R.id.menu_dof_recenter).title = "Back to $it"
+                }
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                if (menuItem.itemId != R.id.menu_dof_recenter) return false
+                viewModel.recenter()
+                return true
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         // Each time the map settles on a new view
         viewLifecycleOwner.lifecycleScope.launch {

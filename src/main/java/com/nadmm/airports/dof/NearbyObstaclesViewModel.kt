@@ -20,8 +20,11 @@ package com.nadmm.airports.dof
 
 import android.location.Location
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.osmdroid.util.BoundingBox
 
@@ -65,5 +68,13 @@ class NearbyObstaclesViewModel : ViewModel() {
 
     fun setViewport(viewport: BoundingBox) {
         _viewport.value = viewport
+    }
+
+    // Asks the map to go back to the view it opens on, around the location
+    private val _recenter = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val recenter: SharedFlow<Unit> = _recenter.asSharedFlow()
+
+    fun recenter() {
+        _recenter.tryEmit(Unit)
     }
 }
