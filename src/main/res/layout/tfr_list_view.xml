@@ -70,23 +70,27 @@
                 android:layout_height="wrap_content" />
         </com.google.android.material.chip.ChipGroup>
     </FrameLayout>
-    <!-- Shown in place of the list when there is nothing to list -->
-    <TextView android:id="@+id/tfr_list_empty"
-        android:padding="4dp"
-        android:gravity="center"
-        android:visibility="gone"
-        style="@style/TextSmall.Bold"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@id/recycler_view"
-        android:listSelector="?attr/selectableItemBackground"
-        android:footerDividersEnabled="false"
-        android:clipToPadding="false"
-        android:scrollbarStyle="outsideOverlay"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="?attr/listview_margin_bottom"
+    <!-- The list, or in its place a message when there is nothing to list -->
+    <FrameLayout
         android:layout_weight="1"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="0dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@id/recycler_view"
+            android:listSelector="?attr/selectableItemBackground"
+            android:footerDividersEnabled="false"
+            android:clipToPadding="false"
+            android:scrollbarStyle="outsideOverlay"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="?attr/listview_margin_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        <TextView android:id="@+id/tfr_list_empty"
+            style="@style/StatusMessage"
+            android:visibility="gone"
+            android:layout_margin="@dimen/item_padding"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
 </LinearLayout>

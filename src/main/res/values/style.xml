@@ -33,6 +33,14 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- A message in place of a screen's content, such as why a list is
+         empty, in a rounded box -->
+    <style name="StatusMessage" parent="TextSmall">
+        <item name="android:background">@drawable/rounded_rectangle</item>
+        <item name="android:padding">@dimen/item_padding</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <style name="TextSmall.Red">
         <item name="android:textColor">?attr/colorError</item>
     </style>
