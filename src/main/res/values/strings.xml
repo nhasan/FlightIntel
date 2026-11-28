@@ -219,7 +219,7 @@
     <string name="drawer_close">Close Drawer</string>
     <string name="afd">A/FD</string>
     <string name="airports">Airports</string>
-    <string name="title_navdrawer_afd">A/FD</string>
+    <string name="title_navdrawer_afd">Airports</string>
     <string name="title_navdrawer_wx">Weather</string>
     <string name="title_navdrawer_dof">Obstacles</string>
     <string name="title_navdrawer_tfr">TFR</string>
