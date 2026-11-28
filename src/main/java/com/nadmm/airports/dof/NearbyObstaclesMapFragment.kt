@@ -35,6 +35,8 @@ import com.nadmm.airports.R
 import com.nadmm.airports.utils.FormatUtils
 import com.nadmm.airports.utils.GeoUtils
 import com.nadmm.airports.utils.OsmMaps
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
@@ -48,8 +50,12 @@ class NearbyObstaclesMapFragment : FragmentBase() {
     private var status: TextView? = null
     private var details: TextView? = null
     private var hintView: TextView? = null
-    // The hint goes once the user has tapped an obstacle
+    // The hint goes once the user has tapped an obstacle, or after it has
+    // been on screen for HINT_TIMEOUT_MS
     private var hintDismissed = false
+    // A job, not a post to the view: the pager detaches the page before
+    // pausing it, and a detached view can no longer cancel its posts
+    private var hintTimeout: Job? = null
     private var obstacleOverlay: ObstacleOverlay? = null
     private var searchArea: Polygon? = null
     // Zoomed to the search circle once; later updates keep the user's view
@@ -123,6 +129,7 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         }
         hintView?.visibility =
             if (nearby.obstacles.isNotEmpty() && !hintDismissed) View.VISIBLE else View.GONE
+        startHintTimeout()
 
         if (!zoomed) {
             zoomed = true
@@ -160,12 +167,32 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         }
     }
 
+    /**
+     * Counts down the hint's time on screen, once it shows and the map is the
+     * page in view; location updates while it counts don't restart it.
+     */
+    private fun startHintTimeout() {
+        if (hintTimeout?.isActive == true || hintView?.visibility != View.VISIBLE || !isResumed) return
+        hintTimeout = viewLifecycleOwner.lifecycleScope.launch {
+            delay(HINT_TIMEOUT_MS)
+            hintDismissed = true
+            hintView?.animate()?.alpha(0f)?.withEndAction {
+                hintView?.visibility = View.GONE
+                hintView?.alpha = 1f
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         mapView?.onResume()
+        startHintTimeout()
     }
 
     override fun onPause() {
+        // The count starts again when the map is back in view
+        hintTimeout?.cancel()
+        hintTimeout = null
         mapView?.onPause()
         super.onPause()
     }
@@ -179,11 +206,13 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         mapView = null
         status = null
         details = null
+        hintTimeout = null
         hintView = null
         super.onDestroyView()
     }
 
     companion object {
+        private const val HINT_TIMEOUT_MS = 10_000L
         private const val WAITING_TEXT =
             "Obstacles appear here once your location is known."
         private const val SEARCH_AREA_COLOR = 0xCC1E88E5.toInt()
