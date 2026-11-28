@@ -35,7 +35,7 @@ import com.nadmm.airports.data.DatabaseManager.Awos1
 import com.nadmm.airports.data.DatabaseManager.Wxs
 import com.nadmm.airports.databinding.PirepDetailItemBinding
 import com.nadmm.airports.databinding.PirepDetailViewBinding
-import com.nadmm.airports.utils.AircraftTypeDesginators
+import com.nadmm.airports.utils.AircraftTypeDesignators
 import com.nadmm.airports.utils.FormatUtils.formatDegrees
 import com.nadmm.airports.utils.FormatUtils.formatFeetAgl
 import com.nadmm.airports.utils.FormatUtils.formatFeetMsl
@@ -203,7 +203,7 @@ class PirepFragment : WxFragmentBase(NoaaService.ACTION_GET_PIREP) {
 
             addRow(pirepDetails, "Type", entry.reportType)
             addRow(pirepDetails, "Facility", entry.stationId)
-            val aircraft = AircraftTypeDesginators.getAircraftName(entry.aircraftRef)
+            val aircraft = AircraftTypeDesignators.getAircraftName(entry.aircraftRef)
             if (aircraft.isNotEmpty()) {
                 addRow(pirepDetails, "Aircraft", entry.aircraftRef, aircraft)
             } else {
