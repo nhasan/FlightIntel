@@ -33,17 +33,22 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.nadmm.airports.FragmentBase
 import com.nadmm.airports.R
 import com.nadmm.airports.utils.FormatUtils
-import com.nadmm.airports.utils.GeoUtils
 import com.nadmm.airports.utils.OsmMaps
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.osmdroid.util.BoundingBox
+import org.osmdroid.events.DelayedMapListener
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Polygon
 
-/** Shows the obstacles from the List tab on a map, within the search circle. */
+/**
+ * The Map tab of the Obstacles screen: the tallest obstacles in its view.
+ * It opens on the location, and gives its view to the screen each time it
+ * settles after a move or zoom, for the screen to find the obstacles in it.
+ */
 class NearbyObstaclesMapFragment : FragmentBase() {
     private val viewModel: NearbyObstaclesViewModel by activityViewModels()
     private var mapView: MapView? = null
@@ -57,8 +62,7 @@ class NearbyObstaclesMapFragment : FragmentBase() {
     // pausing it, and a detached view can no longer cancel its posts
     private var hintTimeout: Job? = null
     private var obstacleOverlay: ObstacleOverlay? = null
-    private var searchArea: Polygon? = null
-    // Zoomed to the search circle once; later updates keep the user's view
+    // Zoomed to the location once; after that the view is the user's
     private var zoomed = false
 
     override fun onCreateView(
@@ -82,19 +86,12 @@ class NearbyObstaclesMapFragment : FragmentBase() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val map = mapView ?: return
-        val density = resources.displayMetrics.density
+        // Zoomed out further, the area around the view gets too big to hold
+        map.minZoomLevel = MIN_ZOOM
 
-        searchArea = Polygon(map).apply {
-            outlinePaint.color = SEARCH_AREA_COLOR
-            outlinePaint.strokeWidth = SEARCH_AREA_WIDTH_DP * density
-            fillPaint.color = SEARCH_AREA_FILL
-            infoWindow = null
-        }
         obstacleOverlay = ObstacleOverlay(requireContext()) { showDetails(it) }.apply {
             centerLabel = arguments?.getString(NearbyObstaclesActivity.EXTRA_PLACE_NAME)
         }
-        map.overlays.add(searchArea)
-        // After the search area, so taps reach the obstacles first
         map.overlays.add(obstacleOverlay)
         OsmMaps.addScaleAndAttribution(map)
         OsmMaps.runUnderSystemBars(map)
@@ -103,27 +100,47 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         status?.text = WAITING_TEXT
         setFragmentContentShown(true)
 
+        // Once the map settles after a move or zoom; not before it first
+        // zooms to the location, as until then it shows the whole world
+        map.addMapListener(DelayedMapListener(object : MapListener {
+            override fun onScroll(event: ScrollEvent?) = reportView()
+            override fun onZoom(event: ZoomEvent?) = reportView()
+        }, VIEW_SETTLE_MS))
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.nearby.collect { nearby -> nearby?.let { show(it) } }
+                launch {
+                    viewModel.nearby.collect { nearby -> nearby?.let { show(it) } }
+                }
+                launch {
+                    viewModel.recenter.collect { recenter() }
+                }
+                // Until there are obstacles, why not, such as no location permission
+                viewModel.message.collect { message ->
+                    if (viewModel.nearby.value == null) status?.text = message ?: WAITING_TEXT
+                }
             }
         }
+    }
+
+    private fun reportView(): Boolean {
+        val map = mapView ?: return true
+        if (zoomed && map.width > 0) viewModel.setViewport(map.boundingBox)
+        return true
     }
 
     private fun show(nearby: NearbyObstacles) {
         val map = mapView ?: return
         val center = GeoPoint(nearby.location.latitude, nearby.location.longitude)
-        val radiusMeters = nearby.radiusNm * GeoUtils.METERS_PER_NAUTICAL_MILE.toDouble()
-        val circle = Polygon.pointsAsCircle(center, radiusMeters)
-        searchArea?.points = circle
         obstacleOverlay?.center = center
         obstacleOverlay?.setObstacles(nearby.obstacles)
 
         map.visibility = View.VISIBLE
         status?.apply {
             visibility = if (nearby.obstacles.isEmpty()) View.VISIBLE else View.GONE
-            text = "No obstacles within ${nearby.radiusNm} NM"
-            // Over the map now, so at the top, clear of the search circle
+            text = if (nearby.inView > 0) "No obstacles match the filters"
+                else "No obstacles in view"
+            // Over the map now, so at the top, clear of the location
             updateLayoutParams<FrameLayout.LayoutParams> {
                 gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
             }
@@ -134,7 +151,7 @@ class NearbyObstaclesMapFragment : FragmentBase() {
 
         if (!zoomed) {
             zoomed = true
-            val box = BoundingBox.fromGeoPointsSafe(circle)
+            val box = NearbyObstaclesFragment.startBox(nearby.location)
             val padding = (ZOOM_PADDING_DP * resources.displayMetrics.density).toInt()
             // Zooming needs the map's size, which is known only after layout
             if (map.width > 0 && map.height > 0) {
@@ -146,6 +163,14 @@ class NearbyObstaclesMapFragment : FragmentBase() {
             }
         }
         map.invalidate()
+    }
+
+    /** Goes back to the view the map opens on, around the latest location. */
+    private fun recenter() {
+        val map = mapView ?: return
+        val location = viewModel.nearby.value?.location ?: return
+        val padding = (ZOOM_PADDING_DP * resources.displayMetrics.density).toInt()
+        map.zoomToBoundingBox(NearbyObstaclesFragment.startBox(location), true, padding)
     }
 
     private fun showDetails(obstacle: DofListDataModel?) {
@@ -216,10 +241,11 @@ class NearbyObstaclesMapFragment : FragmentBase() {
         private const val HINT_TIMEOUT_MS = 10_000L
         private const val WAITING_TEXT =
             "Obstacles appear here once your location is known."
-        private const val SEARCH_AREA_COLOR = 0xCC1E88E5.toInt()
-        private const val SEARCH_AREA_FILL = 0x141E88E5
-        private const val SEARCH_AREA_WIDTH_DP = 2f
         private const val ZOOM_PADDING_DP = 16f
+        // About 60 NM across a phone; the area held around the view is three
+        // times that each way
+        private const val MIN_ZOOM = 9.0
+        private const val VIEW_SETTLE_MS = 300L
         // 20% translucent, so the map shows through the details panel
         private const val DETAILS_BACKGROUND_ALPHA = 204
     }

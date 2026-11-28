@@ -32,12 +32,9 @@
     <!-- Shown until the obstacles are known, and when none are found -->
     <TextView
             android:id="@+id/dof_map_status"
-            style="@style/TextSmall"
-            android:background="@drawable/rounded_rectangle"
-            android:padding="@dimen/item_padding"
+            style="@style/StatusMessage"
             android:layout_margin="@dimen/item_padding"
             android:layout_gravity="center"
-            android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     <!-- How to see an obstacle's details, until the user first does. Where

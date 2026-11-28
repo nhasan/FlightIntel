@@ -52,7 +52,7 @@ object OsmMaps {
     // osmdroid's own offset for the attribution, from the bottom left
     private const val COPYRIGHT_OFFSET_PX = 10
     private const val OFFLINE_PADDING_DP = 8f
-    private const val OFFLINE_TEXT = "Offline: map detail may be missing"
+    private const val OFFLINE_TEXT = "Offline: Map detail may be missing"
 
     /**
      * Configures osmdroid. The OSM tile usage policy requires an identifying

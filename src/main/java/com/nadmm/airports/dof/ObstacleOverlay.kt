@@ -43,7 +43,10 @@ import kotlin.math.hypot
  * the search position, stand out in red with their heights, MSL with AGL in
  * parentheses as on a sectional chart. A name for the search position, such
  * as an airport's, can be drawn above it. One overlay draws them all, as a
- * search can find over a thousand. Tapping near an obstacle selects it.
+ * search can find over a thousand: only those on screen, and where symbols
+ * would pile up, only the tallest in each spot, as on a chart, so zooming
+ * in shows the rest. The plain symbols are drawn together, in a few calls,
+ * so the map stays smooth. Tapping near a drawn obstacle selects it.
  */
 class ObstacleOverlay(
     private val context: Context,
@@ -63,6 +66,22 @@ class ObstacleOverlay(
 
     private val screen = Point()
     private val path = Path()
+    // Rebuilt each frame: the obstacles drawn, the screen cells they took, and
+    // the plain symbols' lines and base dots, to draw together
+    private val drawn = ArrayList<Item>()
+    private val occupied = HashSet<Long>()
+    private val lines = Floats()
+    private val dots = Floats()
+    private val dotHalo = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 2 * (DOT_DP + SYMBOL_HALO_DP) * density
+        color = Color.WHITE
+    }
+    private val dotFill = Paint(dotHalo).apply {
+        strokeWidth = 2 * DOT_DP * density
+        color = OBSTACLE_COLOR
+    }
     private val fill = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
     private val outline = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -113,9 +132,36 @@ class ObstacleOverlay(
     }
 
     override fun draw(canvas: Canvas, projection: Projection) {
+        val bounds = projection.intrinsicScreenRect
+        val margin = (TAP_SLOP_DP * density).toInt()
+        val cell = CELL_DP * density
+        drawn.clear()
+        occupied.clear()
+        lines.clear()
+        dots.clear()
+        // Tallest first, so each spot shows its tallest
         for (item in items) {
-            if (item !== selected && item !in highlighted) drawObstacle(canvas, projection, item, OBSTACLE_COLOR, 1f)
+            projection.toPixels(item.point, screen)
+            if (screen.x < bounds.left - margin || screen.x > bounds.right + margin
+                || screen.y < bounds.top - margin || screen.y > bounds.bottom + margin + margin) {
+                continue
+            }
+            // These always show, drawn on top below
+            if (item === selected || item in highlighted) {
+                drawn.add(item)
+                continue
+            }
+            val key = (Math.floorDiv(screen.x, cell.toInt().coerceAtLeast(1)).toLong() shl 32) or
+                (Math.floorDiv(screen.y, cell.toInt().coerceAtLeast(1)).toLong() and 0xFFFFFFFFL)
+            if (!occupied.add(key)) continue
+            drawn.add(item)
+            addSymbol(item, screen.x.toFloat(), screen.y.toFloat())
         }
+        canvas.drawLines(lines.array, 0, lines.size, symbolHalo)
+        canvas.drawPoints(dots.array, 0, dots.size, dotHalo)
+        symbolLine.color = OBSTACLE_COLOR
+        canvas.drawLines(lines.array, 0, lines.size, symbolLine)
+        canvas.drawPoints(dots.array, 0, dots.size, dotFill)
         // The highlighted ones and the selection on top, so they stay visible where
         // obstacles crowd
         for (item in highlighted) {
@@ -138,6 +184,29 @@ class ObstacleOverlay(
                 canvas.drawText(label, x, y, centerHalo)
                 canvas.drawText(label, x, y, centerText)
             }
+        }
+    }
+
+    /** Adds a plain symbol at [x], [y] to the lines and dots drawn together. */
+    private fun addSymbol(item: Item, x: Float, y: Float) {
+        val height = (if (item.isTall) TALL_HEIGHT_DP else HEIGHT_DP) * density
+        val half = height * WIDTH_RATIO
+        val gap = RAY_GAP_DP * density
+        val ray = RAY_DP * density
+        // A group shows as two symbols side by side, as on the chart
+        val count = if (item.obstacle.count > 1) 2 else 1
+        for (i in 0 until count) {
+            val cx = if (count == 2) x + (if (i == 0) -half * 0.9f else half * 0.9f) else x
+            val tipY = y - height
+            lines.add(cx - half, y, cx, tipY)
+            lines.add(cx, tipY, cx + half, y)
+            if (item.obstacle.isLighted) {
+                // Rays from the tip: up, and up to either side
+                lines.add(cx, tipY - gap, cx, tipY - gap - ray)
+                lines.add(cx - gap, tipY - gap * 0.6f, cx - gap - ray * 0.8f, tipY - gap * 0.6f - ray * 0.6f)
+                lines.add(cx + gap, tipY - gap * 0.6f, cx + gap + ray * 0.8f, tipY - gap * 0.6f - ray * 0.6f)
+            }
+            dots.add(cx, y)
         }
     }
 
@@ -198,7 +267,8 @@ class ObstacleOverlay(
         val projection = mapView.projection
         var nearest: Item? = null
         var nearestDistance = TAP_SLOP_DP * density
-        for (item in items) {
+        // Only those drawn: one hidden under a taller symbol shows when zoomed in
+        for (item in drawn) {
             projection.toPixels(item.point, screen)
             // The middle of the symbol, which stands above the obstacle
             val middle = screen.y - (if (item.isTall) TALL_HEIGHT_DP else HEIGHT_DP) * density / 2
@@ -213,6 +283,26 @@ class ObstacleOverlay(
         onSelect(nearest?.obstacle)
         mapView.invalidate()
         return nearest != null
+    }
+
+    /** A growing array of floats, reused from frame to frame. */
+    private class Floats {
+        var array = FloatArray(1024)
+            private set
+        var size = 0
+            private set
+
+        fun clear() {
+            size = 0
+        }
+
+        fun add(vararg values: Float) {
+            if (size + values.size > array.size) {
+                array = array.copyOf(maxOf(array.size * 2, size + values.size))
+            }
+            values.copyInto(array, size)
+            size += values.size
+        }
     }
 
     companion object {
@@ -248,6 +338,8 @@ class ObstacleOverlay(
         private const val OUTLINE_DP = 1.5f
         private const val POSITION_DP = 6f
         private const val TAP_SLOP_DP = 24f
+        // Where symbols are closer than this, only the tallest shows
+        private const val CELL_DP = 10f
         private const val LABEL_SP = 12f
         private const val LABEL_HALO_DP = 3f
         private const val LABEL_GAP_DP = 2f

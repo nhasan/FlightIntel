@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+ * FlightIntel for Pilots
+ *
+ * Copyright 2026 Nadeem Hasan <nhasan@nadmm.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ -->
+<!-- The Obstacles screen: its filters, and its Map and List tabs -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- Filters for both tabs, by height, lighting and type.
+         The chips share the row's width, long labels shortened, so each
+         chip's icon stays on screen. -->
+    <FrameLayout
+        android:id="@+id/dof_filters"
+        android:paddingStart="@dimen/item_padding"
+        android:paddingEnd="@dimen/item_padding"
+        android:paddingTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/dof_filter_chips"
+            app:singleLine="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dof_filter_height"
+                style="@style/FilterBarChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dof_filter_lighting"
+                style="@style/FilterBarChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/dof_filter_type"
+                style="@style/FilterBarChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.chip.ChipGroup>
+    </FrameLayout>
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/dof_tabs"
+        app:tabMode="scrollable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/dof_pager"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
+</LinearLayout>

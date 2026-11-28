@@ -20,26 +20,61 @@ package com.nadmm.airports.dof
 
 import android.location.Location
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.osmdroid.util.BoundingBox
 
-/** The obstacles found near a location, within [radiusNm]. */
+/**
+ * The tallest obstacles in the map's view that the filters let through,
+ * searched around [location]: [inView] obstacles are in view, [matching] of
+ * them pass the filters, and [obstacles] are the tallest of those, up to a
+ * limit.
+ */
 class NearbyObstacles(
     val location: Location,
-    val radiusNm: Int,
-    val obstacles: List<DofListDataModel>
+    val obstacles: List<DofListDataModel>,
+    val inView: Int,
+    val matching: Int,
 )
 
 /**
- * Shares the nearby obstacles between the List and Map tabs: the list finds
- * them and the map draws the same ones.
+ * Shares the obstacles with the Map and List tabs: the map gives its view,
+ * the screen finds the tallest obstacles in it, and both tabs show them.
+ * Until it can, [message] says why, such as no location permission.
  */
 class NearbyObstaclesViewModel : ViewModel() {
     private val _nearby = MutableStateFlow<NearbyObstacles?>(null)
     val nearby: StateFlow<NearbyObstacles?> = _nearby.asStateFlow()
 
+    private val _message = MutableStateFlow<String?>(null)
+    val message: StateFlow<String?> = _message.asStateFlow()
+
+    // The map's view, once it has settled after a move or zoom
+    private val _viewport = MutableStateFlow<BoundingBox?>(null)
+    val viewport: StateFlow<BoundingBox?> = _viewport.asStateFlow()
+
     fun publish(nearby: NearbyObstacles) {
+        _message.value = null
         _nearby.value = nearby
+    }
+
+    fun publishMessage(message: String) {
+        _message.value = message
+    }
+
+    fun setViewport(viewport: BoundingBox) {
+        _viewport.value = viewport
+    }
+
+    // Asks the map to go back to the view it opens on, around the location
+    private val _recenter = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+    val recenter: SharedFlow<Unit> = _recenter.asSharedFlow()
+
+    fun recenter() {
+        _recenter.tryEmit(Unit)
     }
 }

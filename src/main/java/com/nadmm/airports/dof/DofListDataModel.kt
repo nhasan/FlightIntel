@@ -1,8 +1,6 @@
 package com.nadmm.airports.dof
 
-import android.database.Cursor
-import com.nadmm.airports.data.DatabaseManager.LocationColumns
-import com.nadmm.airports.data.DatabaseManager.DOF
+import android.location.Location
 import com.nadmm.airports.utils.GeoUtils
 import java.util.Locale
 
@@ -23,51 +21,34 @@ data class DofListDataModel(
     val isLighted: Boolean = false
 ) {
     companion object {
-        fun fromCursor(cursor: Cursor): DofListDataModel {
-            val obstacleType = obstacleLabel(
-                cursor.getString(cursor.getColumnIndexOrThrow(DOF.OBSTACLE_TYPE)),
-                cursor.getInt(cursor.getColumnIndexOrThrow(DOF.COUNT))
-            )
-            val mslHeight = cursor.getInt(cursor.getColumnIndexOrThrow(DOF.HEIGHT_MSL))
-            val aglHeight = cursor.getInt(cursor.getColumnIndexOrThrow(DOF.HEIGHT_AGL))
-            val markingType = decodeMarking(cursor.getString(cursor.getColumnIndexOrThrow(DOF.MARKING_TYPE)))
-            val lightingCode = cursor.getString(cursor.getColumnIndexOrThrow(DOF.LIGHTING_TYPE))
-            val lightingType = decodeLighting(lightingCode)
-            val location = buildString {
-                if (cursor.getColumnIndexOrThrow(LocationColumns.DISTANCE) >= 0
-                    && cursor.getColumnIndexOrThrow(LocationColumns.BEARING) >= 0
-                ) {
-                    val distance = cursor.getFloat(cursor.getColumnIndexOrThrow(LocationColumns.DISTANCE))
-                    val bearing = cursor.getFloat(cursor.getColumnIndexOrThrow(LocationColumns.BEARING))
-                    append(
-                        "%.1f NM %s, heading %.0f\u00B0 M".format(
-                            distance, GeoUtils.getCardinalDirection(bearing), bearing
-                        )
-                    )
-                } else {
-                    append("Location unknown")
-                }
-            }
-            val latitude = cursor.getColumnIndex(DOF.LATITUDE_DEGREES)
-                .takeIf { it >= 0 }?.let { cursor.getDouble(it) }
-            val longitude = cursor.getColumnIndex(DOF.LONGITUDE_DEGREES)
-                .takeIf { it >= 0 }?.let { cursor.getDouble(it) }
-            val distanceNm = cursor.getColumnIndex(LocationColumns.DISTANCE)
-                .takeIf { it >= 0 }?.let { cursor.getFloat(it) }
+        /**
+         * An entry for [row], with how far it is and its magnetic bearing from
+         * [reference], the position searched around.
+         */
+        fun fromRow(row: ObstacleRow, reference: Location, declination: Float): DofListDataModel {
+            val results = FloatArray(2)
+            Location.distanceBetween(reference.latitude, reference.longitude,
+                row.latitude, row.longitude, results)
+            val distance = results[0] / GeoUtils.METERS_PER_NAUTICAL_MILE
+            val bearing = (results[1] + declination + 360) % 360
             return DofListDataModel(
-                obstacleType,
-                mslHeight,
-                aglHeight,
-                markingType,
-                lightingType,
-                location,
-                latitude,
-                longitude,
-                distanceNm,
-                cursor.getInt(cursor.getColumnIndexOrThrow(DOF.COUNT)).coerceAtLeast(1),
-                isLighted(lightingCode)
+                obstacleLabel(row.type, row.count),
+                row.mslHeight,
+                row.aglHeight,
+                decodeMarking(row.markingCode),
+                decodeLighting(row.lightingCode),
+                "%.1f NM %s, heading %.0f\u00B0 M".format(
+                    distance, GeoUtils.getCardinalDirection(bearing), bearing),
+                row.latitude,
+                row.longitude,
+                distance,
+                row.count.coerceAtLeast(1),
+                row.isLighted
             )
         }
+
+        /** The type as it shows, such as "Utility Pole", without how many. */
+        fun typeName(type: String): String = decodeObstacle(type)
 
         /**
          * The obstacle type, such as "TOWER", with the number of obstacles
