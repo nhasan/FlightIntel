@@ -5,6 +5,7 @@
 *.iml
 *.log
 .gradle
+.kotlin
 .settings
 bin/
 gen/
